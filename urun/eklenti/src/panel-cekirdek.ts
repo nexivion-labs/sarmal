@@ -20,6 +20,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { PANEL_METINLERI, SINYAL_METINLERI, TREN_METINLERI } from "./yuzey-metinleri.ts";
+import { BINA_STILI, binaBasligiHtml, type BinaBasligi } from "./bina-gorunum.ts";   // PNL-A31: binanın tepesi (ad ve logo)
 import { GORUNUM_KAPAT_KOMUTU, GORUNUM_SEC_KOMUTU } from "./minigraf-gorunum.ts";
 import { PANEL_BETIGI, PANEL_STILI } from "./panel-betik.ts";
 import { TREN_BETIGI, TREN_STILI } from "./tren-betik.ts";
@@ -142,6 +143,19 @@ const TEMA_IKONLARI: Readonly<Record<string, string>> = {
   "pass": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.4 8.2l1.8 1.8 3.5-3.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`,
   "circle-large-outline": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/>`,
   "circle-slash": `<circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.2 11.8l7.6-7.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>`,
+  // 🏢 PNL-A31 bina ağacı (Founder onayı 2026-11-04): codicon kimlikleri, panelin kendi çizimiyle.
+  "organization": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="4.4" r="2"/><path d="M4.6 11.6a3.4 3.4 0 0 1 6.8 0"/><circle cx="3.2" cy="7.2" r="1.4"/><circle cx="12.8" cy="7.2" r="1.4"/><path d="M1 12.6a2.4 2.4 0 0 1 3-2.2M15 12.6a2.4 2.4 0 0 0-3-2.2"/></g>`,
+  "law": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.2v11M5 13.6h6M2.8 4.4h10.4M2.8 4.4 1.3 8.6M2.8 4.4l1.5 4.2M13.2 4.4l-1.5 4.2M13.2 4.4l1.5 4.2"/><path d="M1.1 8.6h3.4a1.7 1.7 0 0 1-3.4 0zM11.5 8.6h3.4a1.7 1.7 0 0 1-3.4 0z"/></g>`,
+  "briefcase": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.8" y="4.8" width="12.4" height="8.6" rx="1.2"/><path d="M5.8 4.8 L5.8 2.6 L10.2 2.6 L10.2 4.8 M1.8 8.6 L14.2 8.6"/></g>`,
+  "rocket": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.6c2.2 1.6 3.2 4 3 7l-1.4 2.4H6.4L5 8.6c-.2-3 .8-5.4 3-7z"/><circle cx="8" cy="6" r="1.1"/><path d="M5 8.6 3.2 10.8l2.4.5M11 8.6l1.8 2.2-2.4.5M7 13l1 1.6 1-1.6"/></g>`,
+  "person": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5" r="2.6"/><path d="M3 14a5 5 0 0 1 10 0"/></g>`,
+  "archive": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.8" y="2.6" width="12.4" height="3.2" rx=".6"/><path d="M2.8 5.8 L2.8 13.4 L13.2 13.4 L13.2 5.8 M6.4 8.4 L9.6 8.4"/></g>`,
+  // Yönetim katının yasa grupları ve bina dışı klasör satırı (Founder onayı 2026-11-04 gecesi).
+  "book": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.2 C6.6 3 4.4 2.6 2 2.8 L2 12.6 C4.4 12.4 6.6 12.8 8 14 C9.4 12.8 11.6 12.4 14 12.6 L14 2.8 C11.6 2.6 9.4 3 8 4.2 Z M8 4.2 L8 14"/></g>`,
+  "notebook": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="1.8" width="10" height="12.4" rx="1"/><path d="M5.6 1.8 L5.6 14.2 M2 4.6 L4.4 4.6 M2 8 L4.4 8 M2 11.4 L4.4 11.4 M7.8 5.2 L11 5.2 M7.8 7.6 L11 7.6"/></g>`,
+  "verified": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.6 L9.6 2.9 L11.7 2.7 L12.2 4.8 L14 5.9 L13.2 7.9 L14 9.9 L12.2 11 L11.7 13.1 L9.6 12.9 L8 14.2 L6.4 12.9 L4.3 13.1 L3.8 11 L2 9.9 L2.8 7.9 L2 5.9 L3.8 4.8 L4.3 2.7 L6.4 2.9 Z"/><path d="M5.6 8 L7.3 9.7 L10.6 6.3"/></g>`,
+  "symbol-color": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.8 A6.2 6.2 0 1 0 8 14.2 C9.2 14.2 9.6 13.4 9.2 12.6 C8.7 11.6 9.3 10.6 10.4 10.6 L11.8 10.6 A2.4 2.4 0 0 0 14.2 8.2 C14.2 4.6 11.4 1.8 8 1.8 Z"/><circle cx="5" cy="7" r=".9"/><circle cx="7.6" cy="4.6" r=".9"/><circle cx="10.8" cy="5.6" r=".9"/></g>`,
+  "folder": `<g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 3.4 L6.2 3.4 L7.6 5 L14.2 5 L14.2 13 L1.8 13 Z"/></g>`,
   "sync": `<g class="don"><path d="M13 8a5 5 0 0 1-8.6 3.5M3 8a5 5 0 0 1 8.6-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M12.4 2.4l0 2.5H9.9M3.6 13.6v-2.5h2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>`,
 };
 
@@ -447,6 +461,13 @@ export function grafParcasi(belge: string): string {
 // ── BÖLÜMLER ─────────────────────────────────────────────────────────────────
 
 export interface RayBolumu {
+  /**
+   * 🏢 PNL-A31: kat alanı taşıyan çalışma alanında yol haritasının tepesindeki bina başlığı. Başlık "Yol
+   * Haritası" bölüm başlığının ÜSTÜNDE durur ve kök satırının yerini alır (Founder onayı 2026-11-04 gecesi).
+   */
+  bina?: BinaBasligi;
+  /** Tepeye taşınan kök satırının Dur ve Dikkat sayıları (alt ağacın toplamı). */
+  binaSinyali?: PanelSatiri["sinyal"];
   agac: string;
   /** Yol Haritası boşken ağaç yerine gösterilen cümle. */
   bosMesaj?: string;
@@ -490,7 +511,49 @@ export function rayBolumuHtml(b: RayBolumu): string {
   const graf = b.graf === undefined ? ""
     : kolon("graf", bolumBasligi("graf", PANEL_METINLERI.miniGrafBasligi.toLocaleUpperCase(PANEL_METINLERI.dil), kapali("graf"), true)
       + govde("graf", `<div id="graf"></div><template id="graf-sablon">${grafParcasi(b.graf)}</template>`));
-  return `<div class="ray-duzen">${kolon("agac", bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${ag}${bos}`))}${graf}</div>`;
+  const tepe = b.bina ? `<div id="${BINA_TEPESI_KIMLIGI}">${binaTepesiIcerik(b.bina, b.binaSinyali)}</div>` : "";
+  return `<div class="ray-duzen">${kolon("agac", tepe + bolumBasligi("agac", baslik, kapali("agac"), false) + govde("agac", `${ag}${bos}`))}${graf}</div>`;
+}
+
+/** Ray sekmesinin tepesindeki bina başlığının parça kimliği (ağaç tazelenince yalnız bu parça yazılır). */
+export const BINA_TEPESI_KIMLIGI = "bina-tepe";
+
+/** Tepedeki bina başlığının içi: ad, logo, açıklama ve Dur ile Dikkat toplamı. */
+export function binaTepesiIcerik(bina: BinaBasligi, sinyal?: PanelSatiri["sinyal"]): string {
+  return binaBasligiHtml(bina, sinyal ? binaTepesiIsareti(sinyal) : "");
+}
+
+/**
+ * Tepedeki bina başlığının Dur ve Dikkat sayıları: kök satırının bütün alt ağacının toplamı. Başlık bir
+ * ağaç satırı olmadığı için açık-kapalı ayrımı yoktur ve sayılar yalnız bilgi verir.
+ */
+export function binaTepesiIsareti(s: NonNullable<PanelSatiri["sinyal"]>): string {
+  const n = s.toplam;
+  if (n.dur + n.dikkat <= 0) return "";
+  return `<span class="sny" title="${kacir(SINYAL_METINLERI.rayIsaretIpucu(n.dur, n.dikkat))}">`
+    + (n.dur ? `<span class="rozet dur">${n.dur}</span>` : "") + (n.dikkat ? `<span class="rozet dikkat">${n.dikkat}</span>` : "") + `</span>`;
+}
+
+/**
+ * 🏢 PNL-A31 (Founder onayı 2026-11-04 gecesi): binası çizilen kök satırını ağaçtan ayırır. Şirket yalnız
+ * bir kez, tepedeki başlıkta görünür; kökün alt ağacındaki satırlar bir kademe yukarı çıkar ve katlar
+ * doğrudan "Yol Haritası" başlığının altında açılır. Satır kimlikleri değişmez, böylece açık-kapalı
+ * tercihleri ve tıklama iletileri aynı satırlara gider. `kok` ağaçta kök kademesinde yoksa liste olduğu
+ * gibi döner.
+ */
+export function binaKokunuAyir<T extends { satir: PanelSatiri; oge: unknown }>(
+  tum: readonly T[], kok: unknown,
+): { tepe?: T; satirlar: T[] } {
+  const tepe = tum.find((u) => u.oge === kok && u.satir.derinlik === 0);
+  if (!tepe) return { satirlar: [...tum] };
+  const onek = `${tepe.satir.id}/`;
+  const satirlar: T[] = [];
+  for (const u of tum) {
+    if (u === tepe) continue;
+    if (u.satir.id.startsWith(onek)) u.satir.derinlik -= 1;
+    satirlar.push(u);
+  }
+  return { tepe, satirlar };
 }
 
 /** Tren şemasının iki parçası (tren-gorunum.ts `trenSemaHtml`): sol sütundaki şema ve sağ sütundaki profil. */
@@ -636,7 +699,7 @@ export function panelHtml(b: PanelBelgesi): string {
     + `<meta http-equiv="Content-Security-Policy" content="${csp}">`
     + `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
     + `<title>${kacir(PANEL_METINLERI.panelAdi)}</title>`
-    + `<style>${PANEL_STILI}${TREN_STILI}${TREN_CANLI_STILI}</style>`
+    + `<style>${PANEL_STILI}${TREN_STILI}${TREN_CANLI_STILI}${BINA_STILI}</style>`
     // Her sekmenin satır ikonları kendi stil öğesindedir: bir sekmenin güncellemesi ötekinin ikonlarını silmez.
     + SEKMELER.map((s) => `<style id="ikon-stil-${s}">${b.bolumler[s].ikonStili}</style>`).join("")
     + `</head><body>`

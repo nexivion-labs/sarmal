@@ -20,6 +20,7 @@
 import { existsSync, readdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, sep } from "node:path";
 import { anadizinBul } from "../../cekirdek/src/denetci.ts";
+import { okunmazMuhurlu } from "../../cekirdek/src/kimlik.ts";   // KPS-MHR-A02: mühürlü klasör canlı varlık ilan etmez
 import { iskeletPlani } from "../../cekirdek/src/iskeletci.ts";
 import { belirtecle } from "../../cekirdek/src/belirtec.ts";
 import { ayristir } from "../../cekirdek/src/ayristirici.ts";
@@ -144,6 +145,7 @@ export function ilanliVarliklar(calismaAlaniKoku: string): string[] {
   try {
     for (const alt of readdirSync(calismaAlaniKoku, { withFileTypes: true })) {
       if (!alt.isDirectory() || alt.name.startsWith(".") || alt.name === "node_modules") continue;
+      if (okunmazMuhurlu(`${alt.name}/_`)) continue;   // KPS-MHR-A02 · MIM-3.4: arşiv ya da sonra mühürlü klasör canlı varlık değildir
       const aday = join(calismaAlaniKoku, alt.name);
       if (anadizinBul(aday)) koklar.push(aday);
     }

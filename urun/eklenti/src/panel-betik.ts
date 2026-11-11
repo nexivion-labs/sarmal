@@ -98,9 +98,27 @@ button{font:inherit;color:inherit}
 /* GENİŞ VE ALÇAK PANEL (Founder'ın alt paneli, yaklaşık 1400×400): Yol Haritası ile Mini Graf yan
    yana iki sütundur. Her sütun içerik alanının bütün boyunu alır, başlığı sütunun üstünde durur ve
    gövdesi kendi içinde kayar. Katlanan sütun yalnız başlığı kadar yer tutar ve öteki sütun boşalan
-   genişliği alır. Dar panelde (kenar çubuğu) iki sütun alt alta akar ve içerik bütün olarak kayar.
-   Hiçbir başlık alanın dibine yapıştırılmaz: eski düzende katlanan Mini Graf başlığı pencere boyuna
-   dayanan bir kuralla dibe itiliyordu ve panel küçük bir kutuya sıkışabiliyordu. */
+   genişliği alır.
+   DAR PANEL (kenar çubuğu · Founder bulgusu 2026-11-04 gecesi): iki sütun alt alta durur, fakat
+   Mini Graf panelin dibine yapışıktır. Eskiden içerik bütün olarak kayıyordu; ağaç uzayınca Mini
+   Graf içerikle birlikte aşağı itiliyor ve başlığına ulaşmak için en alta kaydırmak gerekiyordu.
+   Şimdi Yol Haritası kalan yüksekliği alır ve kendi içinde kayar; Mini Graf açıkken kendi içerik
+   yüksekliğini alır, fakat panelin yarısını geçmez ve fazlası kendi içinde kayar; katlıyken yalnız
+   başlık satırı kalır. Yol Haritası katlanırsa Mini Graf boşalan yüksekliği alır. Yükseklik betikle
+   ölçülmez, yalnız esnek kutuyla kurulur; ölçüm ile boyut birbirini besleyen bir döngü doğmaz. */
+@media (max-width:${GENIS_PANEL_PX - 1}px){
+  .sekme-paneli:has(>.ray-duzen){display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+  .ray-duzen{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  .kol{min-height:0;display:flex;flex-direction:column}
+  .kol>.bas,.kol>#bina-tepe{flex:none}
+  .kol>.bolum{min-height:0;overflow:auto}
+  .kol[data-kol="agac"]{flex:1 1 0}
+  .kol[data-kol="agac"]>.bolum{flex:1 1 auto;padding-bottom:8px}
+  .kol[data-kol="graf"]{flex:0 0 auto;max-height:50%;border-top:1px solid var(--vscode-sideBarSectionHeader-border,var(--vscode-panel-border,rgba(128,128,128,.35)))}
+  .kol[data-kol="graf"]>.bolum{flex:0 1 auto}
+  .kol[data-kol="agac"]:has(>.bolum[hidden]){flex:0 0 auto}
+  .kol[data-kol="agac"]:has(>.bolum[hidden])+.kol[data-kol="graf"]{flex:1 1 0;max-height:none}
+}
 @media (min-width:${GENIS_PANEL_PX}px){
   .sekme-paneli:has(>.ray-duzen){display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
   .ray-duzen{flex:1 1 auto;min-height:0;display:flex;align-items:stretch}

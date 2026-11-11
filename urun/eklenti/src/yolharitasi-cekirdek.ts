@@ -16,10 +16,11 @@
 
 import type { Dugum, Param, Program } from "../../cekirdek/src/sozdizim.ts";
 import { durumTuret } from "../../cekirdek/src/durum.ts";   // YUZ-4: Adım sayaçları kanonik türetmeden
-import { adAlaniAyir } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
+import { adAlaniAyir, dosyaMuhru } from "../../cekirdek/src/kimlik.ts";   // ORK-4: ad alanı ayrımı motorun tek kuralından okunur
 import { adAlaniSecenekleri, fazKarsilastir, type Dag, type DagDugum } from "../../cekirdek/src/dag.ts";   // ORK-4: ortak kodun ayrıştırılmış anahtarı motorun kendi çözücüsünden (KPS-KOD-A01)
 import type { Durum } from "./yol-dekor.ts";                // tip-yalnız ithal: çalışma zamanında iz bırakmaz
 import { basename, dirname } from "node:path";
+import { dizinKapsar, yolDuzle, type Bina, type BinaKitapligi, type BinaProfili } from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları motorun kendi okumasından
 
 /**
  * Bir yol, verilen kökün KAPSAMINDA mı? Kökün kendisi de kapsama dâhildir.
@@ -590,4 +591,240 @@ export function dagDugumunuCoz(dag: Dag | undefined, kod: string, dosyaYolu?: st
     const hedef = d.dosya.replace(/\\/g, "/");
     return yol === hedef || yol.endsWith(`/${hedef}`);
   });
+}
+
+
+// ── 🏢 PNL-A31: ÇALIŞMA ALANININ BİNA AĞACI (Founder 2026-11-04) ──────────────
+//   Kat alanı taşıyan bir ÇalışmaAlanı yol haritasında bina gibi görünür ve ağaç
+//   yalnız anadizinlerin Kitaplık düzeninden türer (Kök › Kat › Ofis › Proje); panel
+//   elle liste tutmaz ve hiçbir ofis ya da proje adı kodda yazılmaz. Founder'ın
+//   onayladığı şema şudur:
+//     • Kat bantları artan sırayla gelir. Birinci kat yönetim katıdır: o katın
+//       Kitaplıklarına düşen projeler bandın altında doğrudan durur.
+//     • Üst katlarda kendi `kat:` alanını taşıyan her Kitaplık bir ofistir. Ofisin
+//       dizininde bir varlık kökü yaşıyorsa (kendi anadizinli bir ofis) ofis satırı o
+//       varlığın kendisidir; içerik yine Kitaplık düzeninden kurulur.
+//     • Ofisin içinde dizini bir varlık kökü olan Kitaplık o varlığın satırıdır;
+//       varlık kökü olmayan ve proje taşıyan Kitaplık bir gruptur, proje taşımayan
+//       Kitaplık görünmez. Ofisin doğrudan altındaki bir grubun çocukları ofisin
+//       müşterileridir (ajansın Müşteriler grubu gibi); daha derindeki projeler
+//       yine projedir.
+//     • Müşteri kademesi Kişi › Proje › Faz düzenindedir (Founder onayı 2026-11-04
+//       gecesi): her müşteri kendi satırını alır, tek projeli müşteri de iki projeli
+//       müşteri de aynı biçimde görünür ve projeleri onun altında durur. Satırın adı
+//       müşterinin Profil düğümünden okunur (müşteri Kitaplığının içindeki Profil, o
+//       yoksa müşterinin kendi proje kökünün Profili); kişi yazılmamışsa Profilin adı,
+//       Profil de yoksa Kitaplığın adı yazar. Müşteri üst satırın sayısında bir sayılır.
+//     • Katı olmayan üst Kitaplıklar (çalışma alanının kendi `oz/` kitaplığı hariç)
+//       en altta bina dışı satırında anılır.
+//   Bina okuması motorun kendi okumasıdır (cekirdek/src/bina.ts).
+
+/** Bina ağacındaki bir varlığın rolü; panel simgeyi bu rolden seçer. */
+export type BinaRolu = "yonetim" | "proje";
+
+/**
+ * Bina ağacının düğümü. `birim`, ofisin, grubun ve müşterinin açıklamasında yazan proje sayısıdır.
+ * Müşteri düğümünün `kitaplik` alanı müşteriyi ilan eden Kitaplıktır; Kitaplığı olmayan (müşteriler
+ * grubunda serbest duran) proje kendi başına bir müşteridir ve yalnız `dizin` taşır.
+ */
+export type BinaDugumu<T> =
+  | { tur: "kat"; kat: number; cocuklar: BinaDugumu<T>[] }
+  | { tur: "ofis"; kitaplik: BinaKitapligi; varlik?: T; cocuklar: BinaDugumu<T>[]; birim: number }
+  | { tur: "grup"; kitaplik: BinaKitapligi; disari: boolean; cocuklar: BinaDugumu<T>[]; birim: number }
+  | { tur: "musteri"; kitaplik?: BinaKitapligi; dizin: string; cocuklar: BinaDugumu<T>[]; birim: number }
+  | { tur: "varlik"; varlik: T; rol: BinaRolu }
+  | { tur: "disari"; kitapliklar: BinaKitapligi[]; cocuklar: BinaDugumu<T>[] }
+  /** Bina dışında projesi olmayan Kitaplık: diskteki klasörleri yalnız adlarıyla sayılır. */
+  | { tur: "klasor"; kitaplik: BinaKitapligi };
+
+/**
+ * 🏢 PNL-A31 (Founder bulgusu 2026-11-04 gecesi): bina dışındaki projesiz bir Kitaplığın klasör sayımı.
+ * Girdiler dizinin doğrudan çocuklarıdır ve yalnız adları okunur; mühürlü klasörün (arşiv ya da sonra
+ * mührü, MIM-3.4) içine inilmez. Gizli adlar (`.git` gibi) ve dosyalar sayılmaz.
+ */
+export function klasorSayimi(girdiler: Iterable<{ ad: string; dizin: boolean }>): { klasor: number; muhurlu: number } {
+  let klasor = 0, muhurlu = 0;
+  for (const g of girdiler) {
+    if (!g.dizin || g.ad.startsWith(".")) continue;
+    const tur = dosyaMuhru(g.ad)?.tur;
+    if (tur === "arşiv" || tur === "sonra") muhurlu += 1; else klasor += 1;
+  }
+  return { klasor, muhurlu };
+}
+
+/**
+ * Müşteri satırının adı: Profildeki ilk kişinin hitabı, kişi yazılmamışsa Profilin adı (firma), Profil
+ * yoksa yedek ad (Kitaplığın ya da projenin adı). Kodda hiçbir müşteri adı yazılmaz.
+ */
+export function musteriAdi(profil: BinaProfili | undefined, yedek: string): string {
+  return profil?.kisi || profil?.ad || yedek;
+}
+
+/** Çalışma alanının kendi öz kitaplığının klasörü; motor kanonu da `<kök>/oz/` altında arar. */
+export const OZ_KLASORU = "oz";
+
+/**
+ * Bir düğüm listesinin proje sayısı: her varlık ve her müşteri grubu bir sayılır, öteki gruplar
+ * içlerindeki projelerle sayılır. Müşterinin içindeki projeler müşteriyi çoğaltmaz.
+ */
+export function binaBirimi<T>(dugumler: readonly BinaDugumu<T>[]): number {
+  let n = 0;
+  for (const d of dugumler) {
+    // Yönetim katı proje çağırmaz (Founder hükmü 2026-11-04 gecesi): yönetim projesi proje sayısına girmez.
+    if ((d.tur === "varlik" && d.rol !== "yonetim") || d.tur === "musteri") n += 1;
+    else if (d.tur === "grup" || d.tur === "ofis" || d.tur === "kat" || d.tur === "disari") n += binaBirimi(d.cocuklar);
+  }
+  return n;
+}
+
+/**
+ * Bina ağacını kurar. `bina` kat alanı taşıyan çalışma alanının okumasıdır; `ekKitapliklar` binanın
+ * içindeki öteki anadizinlerin Kitaplık ilanlarıdır (kendi anadizinli bir ofisin müşterileri gibi) ve
+ * aynı dizini iki ilan anarsa önce gelen kazanır. `varliklar` binanın içinde yerleştirilecek
+ * varlıklardır; bir varlığın içinde yaşayan alt varlıkları çağıran dışarıda bırakır, onlar kendi
+ * varlıklarının altında kalır. Bina katsızsa tanımsız döner ve panel bugünkü görünümü korur.
+ */
+export function binaAgaci<T extends { kokDizin: string }>(
+  bina: Bina, ekKitapliklar: readonly BinaKitapligi[], varliklar: readonly T[],
+): BinaDugumu<T>[] | undefined {
+  if (!bina.katlar.length) return undefined;
+  const kok = yolDuzle(bina.kokDizin);
+  const kitapliklar: BinaKitapligi[] = [];
+  const gorulen = new Set<string>();
+  for (const k of [...bina.kitapliklar, ...ekKitapliklar]) {
+    const d = yolDuzle(k.dizin);
+    if (d === kok || gorulen.has(d)) continue;
+    gorulen.add(d);
+    kitapliklar.push(k);
+  }
+  // Her Kitaplığın üstü: onu kapsayan en derin öteki Kitaplık.
+  const ust = new Map<BinaKitapligi, BinaKitapligi | undefined>();
+  for (const k of kitapliklar) {
+    let sec: BinaKitapligi | undefined;
+    for (const a of kitapliklar) {
+      if (a === k || !dizinKapsar(a.dizin, k.dizin) || yolDuzle(a.dizin) === yolDuzle(k.dizin)) continue;
+      if (!sec || a.dizin.length > sec.dizin.length) sec = a;
+    }
+    ust.set(k, sec);
+  }
+  // Varlığın yeri: kökü bir Kitaplığın dizinine eşitse o Kitaplığın kimliğidir, değilse onu
+  // kapsayan en derin Kitaplıkta serbest durur; hiçbir Kitaplığa düşmeyen varlık bina dışındadır.
+  const kimlik = new Map<BinaKitapligi, T>();
+  const serbest = new Map<BinaKitapligi | undefined, T[]>();
+  for (const v of varliklar) {
+    const d = yolDuzle(v.kokDizin);
+    let ev: BinaKitapligi | undefined;
+    for (const k of kitapliklar) {
+      if (!dizinKapsar(k.dizin, d)) continue;
+      if (!ev || k.dizin.length > ev.dizin.length) ev = k;
+    }
+    if (ev && yolDuzle(ev.dizin) === d && !kimlik.has(ev)) { kimlik.set(ev, v); continue; }
+    const l = serbest.get(ev) ?? [];
+    l.push(v);
+    serbest.set(ev, l);
+  }
+  // Sıra ilan sırasıdır; iki anadizinin ilanları birleştiği için sıra birleşik listedeki konumdur.
+  const konum = new Map(kitapliklar.map((k, i) => [k, i] as const));
+  const siraIle = (a: BinaKitapligi, b: BinaKitapligi): number => konum.get(a)! - konum.get(b)!;
+  const dizinIle = (a: T, b: T): number => a.kokDizin.localeCompare(b.kokDizin);
+  /**
+   * `kap` Kitaplığının içeriği; `rol` içerideki varlıkların rolüdür. Ofisin doğrudan altındaki
+   * (`ofisDuzeyi`) grubun çocukları müşteridir (`musteriler`): her biri bir müşteri düğümü olur ve
+   * içindeki projeler yine projedir. Öteki grupların içi bulundukları yerin rolünü taşır.
+   */
+  const icerik = (kap: BinaKitapligi, rol: BinaRolu, ofisDuzeyi: boolean, disari: boolean, musteriler = false): BinaDugumu<T>[] => {
+    const cikti: BinaDugumu<T>[] = [];
+    for (const c of kitapliklar.filter((k) => ust.get(k) === kap && k.kendiKati === undefined).sort(siraIle)) {
+      const v = kimlik.get(c);
+      if (musteriler) {
+        // Müşteri: kendi proje kökü olan Kitaplık tek projeli müşteridir, öteki Kitaplık projelerini sarar.
+        const cocuklar: BinaDugumu<T>[] = v ? [{ tur: "varlik", varlik: v, rol: "proje" }] : icerik(c, "proje", false, disari);
+        if (cocuklar.length) cikti.push({ tur: "musteri", kitaplik: c, dizin: c.dizin, cocuklar, birim: binaBirimi(cocuklar) });
+        continue;
+      }
+      if (v) { cikti.push({ tur: "varlik", varlik: v, rol }); continue; }
+      const cocuklar = icerik(c, rol, false, disari, ofisDuzeyi);
+      if (!cocuklar.length) continue;
+      cikti.push({ tur: "grup", kitaplik: c, disari, cocuklar, birim: binaBirimi(cocuklar) });
+    }
+    for (const v of (serbest.get(kap) ?? []).sort(dizinIle)) {
+      cikti.push(musteriler
+        ? { tur: "musteri", dizin: v.kokDizin, cocuklar: [{ tur: "varlik", varlik: v, rol: "proje" }], birim: 1 }
+        : { tur: "varlik", varlik: v, rol });
+    }
+    return cikti;
+  };
+  const dugumler: BinaDugumu<T>[] = [];
+  for (const kat of bina.katlar) {
+    const katlilar = kitapliklar.filter((k) => k.kendiKati === kat).sort(siraIle);
+    if (kat === 1) {
+      // Yönetim katında ofis satırı yoktur: katın Kitaplıklarına düşen projeler bandın altında durur.
+      const cocuklar: BinaDugumu<T>[] = [];
+      for (const k of katlilar) {
+        const v = kimlik.get(k);
+        if (v) cocuklar.push({ tur: "varlik", varlik: v, rol: "yonetim" });
+        cocuklar.push(...icerik(k, "yonetim", false, false));
+      }
+      dugumler.push({ tur: "kat", kat, cocuklar });
+      continue;
+    }
+    const ofisler: BinaDugumu<T>[] = katlilar.map((k) => {
+      const cocuklar = icerik(k, "proje", true, false);
+      const v = kimlik.get(k);
+      return { tur: "ofis", kitaplik: k, ...(v ? { varlik: v } : {}), cocuklar, birim: binaBirimi(cocuklar) };
+    });
+    dugumler.push({ tur: "kat", kat, cocuklar: ofisler });
+  }
+  // Bina dışı: katı olmayan üst Kitaplıklar (öz kitaplığı hariç) ve hiçbir Kitaplığa düşmeyen varlıklar.
+  const oz = `${kok}/${OZ_KLASORU}`;
+  const dislar = kitapliklar.filter((k) => ust.get(k) === undefined && k.kendiKati === undefined && yolDuzle(k.dizin) !== oz).sort(siraIle);
+  const disCocuk: BinaDugumu<T>[] = [];
+  for (const k of dislar) {
+    const v = kimlik.get(k);
+    if (v) { disCocuk.push({ tur: "varlik", varlik: v, rol: "proje" }); continue; }
+    const cocuklar = icerik(k, "proje", false, true);
+    if (cocuklar.length) disCocuk.push({ tur: "grup", kitaplik: k, disari: true, cocuklar, birim: binaBirimi(cocuklar) });
+    else disCocuk.push({ tur: "klasor", kitaplik: k });   // projesiz Kitaplık klasör sayısıyla görünür
+  }
+  for (const v of (serbest.get(undefined) ?? []).sort(dizinIle)) disCocuk.push({ tur: "varlik", varlik: v, rol: "proje" });
+  if (dislar.length || disCocuk.length) dugumler.push({ tur: "disari", kitapliklar: dislar, cocuklar: disCocuk });
+  return dugumler;
+}
+
+// ── 🏢 PNL-A31: EKLENTİNİN KENDİ DEPOSU (Founder 2026-11-04) ──────────────────
+//   Bina ağacında proje satırı roket taşır; tek bilinçli istisna, paneli çizen
+//   aracın kendi deposudur ve o satır Sarmal'ın marka simgesini taşır. İstisna ad
+//   ile değil depo kimliğiyle türer: projenin git uzak adresi eklentinin paket
+//   ilanındaki depo adresiyle aynıysa proje bu eklentinin kendi deposudur.
+
+/** Git yapılandırma metnindeki bütün uzak adresler (`url = ...` satırları). */
+export function gitUzakAdresleri(yapilandirma: string): string[] {
+  const adresler: string[] = [];
+  for (const m of yapilandirma.matchAll(/^\s*url\s*=\s*(.+?)\s*$/gm)) adresler.push(m[1]!);
+  return adresler;
+}
+
+/**
+ * Depo adresinin karşılaştırma biçimi: `git@host:sahip/ad.git`, `ssh://git@host/sahip/ad`,
+ * `https://host/sahip/ad.git` ve `git+https://...` aynı depoyu gösteriyorsa aynı metne iner
+ * (`host/sahip/ad`, küçük harfle). Çözülemeyen adres tanımsız döner.
+ */
+export function depoAdresiNormal(adres: string): string | undefined {
+  let a = adres.trim().replace(/^git\+/, "");
+  const scp = /^[^@/\s]+@([^:/\s]+):(.+)$/.exec(a);
+  if (scp) a = `${scp[1]}/${scp[2]}`;
+  else {
+    const url = /^[a-z][a-z0-9+.-]*:\/\/(?:[^@/]+@)?([^/:]+)(?::\d+)?\/(.+)$/i.exec(a);
+    if (!url) return undefined;
+    a = `${url[1]}/${url[2]}`;
+  }
+  a = a.replace(/\/+$/, "").replace(/\.git$/i, "").toLowerCase();
+  return /^[^/]+\/.+/.test(a) ? a : undefined;
+}
+
+/** Git yapılandırması `kendiAdres` ile aynı depoyu gösteren bir uzak adres taşıyor mu? */
+export function kendiDeposuMu(yapilandirma: string | undefined, kendiAdres: string | undefined): boolean {
+  const hedef = kendiAdres ? depoAdresiNormal(kendiAdres) : undefined;
+  if (!hedef || !yapilandirma) return false;
+  return gitUzakAdresleri(yapilandirma).some((u) => depoAdresiNormal(u) === hedef);
 }

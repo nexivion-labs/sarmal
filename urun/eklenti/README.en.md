@@ -6,9 +6,22 @@ Sarmal is an open-source language for declaring a software project's folder stru
 
 ![Visual Studio Code with Sarmal: Roadmap and Mini Graph on the left, a highlighted plan file in the middle, the Problems panel at the bottom](https://github.com/nexivion-labs/sarmal/raw/HEAD/urun/eklenti/medya/ekran/editor.png)
 
+## Getting started
+
+Install the extension from the Marketplace, or run `code --install-extension nexivion-labs.sarmal`. Open a folder that contains a `.sar` file and the panels, diagnostics and coloring start on their own; the extension needs no account, no key and no extra runtime. The built-in walkthrough introduces the language step by step.
+
+To give your AI agents the same plan, connect the MCP server from a clone of the repository. It needs Node.js 23.6 or newer and has no install step:
+
+```sh
+git clone https://github.com/nexivion-labs/sarmal.git
+claude mcp add sarmal -e SARMAL_DIL=en -- node /absolute/path/to/sarmal/urun/cekirdek/src/mcp.ts
+```
+
+Any MCP client can start the same command over stdio. The full setup and a tool-by-tool check are in the [repository README](https://github.com/nexivion-labs/sarmal/blob/main/README.en.md#mcp-server-setup-and-access).
+
 ## What you get in the editor
 
-Syntax highlighting and semantic coloring, an outline, folding, signature help, completion fed by the canon, format on save and clickable reference paths come with the install. Findings land in the editor's own Problems panel. Each of the 196 diagnostics has an English and a Turkish body, and each one explains the fix in full sentences instead of only naming the defect.
+Syntax highlighting and semantic coloring, an outline, folding, signature help, completion fed by the canon, format on save and clickable reference paths come with the install. Findings land in the editor's own Problems panel. Each of the 198 diagnostics has an English and a Turkish body, and each one explains the fix in full sentences instead of only naming the defect.
 
 The side panels make the plan visible. Roadmap lists phases, blocks and steps with their status, Mini Graph draws the dependency skeleton, Approvals collects the gates that wait for a decision, and Reminders and Observations carry the engine's watches in plain language. The status bar shows their counters, and when the type registry cannot be found it says plainly that the built-in base canon is in use. No fallback is silent.
 
@@ -20,9 +33,9 @@ Sarmal is a language with Turkish roots, and the extension keeps one simple rule
 
 The extension forces no color on you. The grammar emits standard scope names, so your own theme colors Sarmal source from the moment you install. If you want the canon's palette, the Sarmal Dark and Sarmal Light themes ship in the package, and so does the North Star product icon theme.
 
-If you work with AI agents, the Sarmal core includes an MCP server with 18 tools. Agents read the plan through them, get a plan step's full context from the chef tool and move status through a single authoritative gate. Setup steps are in the repository README.
+If you work with AI agents, the Sarmal core includes an MCP server with 18 tools. Agents read the plan through them, get a plan step's full context from the chef tool and move status through a single authoritative gate. Setup is described under Getting started above.
 
-Sarmal is entirely local. The extension has zero runtime dependencies, makes no network calls and sends no data anywhere. The privacy policy explains how that claim was measured so you can repeat the measurement yourself.
+Sarmal is entirely local. The extension has zero runtime dependencies, makes no network calls and sends no data anywhere. The [privacy policy](https://github.com/nexivion-labs/sarmal/blob/main/PRIVACY.md) explains how that claim was measured so you can repeat the measurement yourself.
 
 ## Links
 

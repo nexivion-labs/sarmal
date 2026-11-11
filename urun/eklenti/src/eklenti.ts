@@ -97,7 +97,7 @@ import { kuzeyYildiziKaydi } from "./yildiz.ts";
 import { takdirKaydi } from "./takdir.ts";
 import { giydirKaydi } from "./giydir.ts";               // BKM-SNV2-A03: görünüm paritesi
 import { AsamaKronometresi, PerformansMercegi } from "./performans.ts";     // 🔬 PRF-A01: izleyici olay + denetim süre merceği · ⏱️ PNL-A14: aşama kronometresi
-import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami, caprazYenidenHesaplanir, CaprazTazelik, odakTuruKarari, ODAK_DAR_TETIGI, type OdakTuruKarari } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı · 🩹 BKM-DNT-A18: dar kök olaylardan türer
+import { gurultuMu, sarGurultuMu, sarKapsamDisi, muhurluSarMi, muhurluKlasorMu, TARAMA_DISLAMA_GLOB, OlayHatti, TekUcusKilidi, turKapsami, caprazYenidenHesaplanir, CaprazTazelik, odakTuruKarari, ODAK_DAR_TETIGI, type OdakTuruKarari } from "./izleyici-cekirdek.ts";   // 🧯 PRF-A02 (+RED-1): olay hattı + tek-kaynak kapsam + kilit · ⚡ PRF-A06: olay-tetikli turun odak kapsamı · 🩹 BKM-DNT-A18: dar kök olaylardan türer
 import { dilAyariDegistiMi, etkinDil } from "./dil.ts";
 import { sozDizimTanisi, taniDilineCevir } from "../../cekirdek/src/tani-metinleri.ts";
 import {
@@ -1617,7 +1617,9 @@ function kapsamAdlariniTazele(): void {
 // varlığı tutar, gezinme sorguları (A02) aktif-varlık süzgeciyle daraltır.
 async function indeksDosyaTazele(uri: vscode.Uri): Promise<void> {
   // MIM-3.4 (KPS-MHR-A01): mühürlü dosya kod dizinine girmez — motorun `dizindenIndeks` davranışıyla aynı.
-  if (uri.scheme !== "file" || INDEKS_DISI.test(uri.fsPath) || muhurluSarMi(uri.fsPath)) return;
+  // KPS-MHR-A02: mühürlü klasörün içi de dizine girmez; yol çalışma alanına göreli ölçülür.
+  if (uri.scheme !== "file" || INDEKS_DISI.test(uri.fsPath) || muhurluSarMi(uri.fsPath)
+    || muhurluKlasorMu(vscode.workspace.asRelativePath(uri, false))) return;
   try {
     const veri = await vscode.workspace.fs.readFile(uri);
     kimlikIndeksi.dosyaGuncelle(uri.fsPath, new TextDecoder().decode(veri));

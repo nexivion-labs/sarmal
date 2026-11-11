@@ -33,11 +33,22 @@ import { kapsamIcinde } from "./yolharitasi-cekirdek.ts";   // 🩹 BKM-DNT-A18:
  *  arşiv, eğitim ya da sonra mührü taşıyan `.sar` dosyası panelin tarama evrenine
  *  girmez. Arşiv ile sonra mühürlü dosyayı motor da okumaz; eğitim mühürlü dosya
  *  ders rafıyla aynı yoldan yürür. Mührü ÇEKİRDEĞİN TEK ÇÖZÜCÜSÜ tanır, eklenti
- *  ikinci bir desen yazmaz (YUZ-3.1: iki yüz aynı dosyaya aynı hükmü verir). Yalnız
- *  `.sar` adına bakılır; aynı biçimde adlandırılmış bir KLASÖR mühür sayılmaz,
- *  çünkü hüküm dosya adına yazılan beyanı tanır. */
+ *  ikinci bir desen yazmaz (YUZ-3.1: iki yüz aynı dosyaya aynı hükmü verir). Bu
+ *  işlev yalnız `.sar` adına bakar; klasör adına basılan mühür (KPS-MHR-A02)
+ *  `muhurluKlasorMu` işlevinde ölçülür. */
 export function muhurluSarMi(yol: string): boolean {
   return yol.endsWith(".sar") && dosyaMuhru(yol) !== undefined;
+}
+
+/** MIM-3.4 · KLASÖR MÜHRÜ (KPS-MHR-A02 · Founder hükmü 2026-11-03): yolun bir
+ *  parçası arşiv, eğitim ya da sonra mührü taşıyorsa o parçanın altındaki her
+ *  `.sar` dosyası panelin tarama evrenine girmez. Arşiv ile sonra mühürlü klasörün
+ *  içine motor inmez; eğitim mühürlü klasörün içeriği ders rafı gibi karne dışıdır
+ *  ve panel ders rafını taramadığı gibi onu da taramaz. Her parça çekirdeğin tek
+ *  çözücüsünden geçer. Yol ÇALIŞMA-ALANI-GÖRELİ verilmelidir; mutlak yolda kökün
+ *  üstündeki klasör adları yanlış-pozitif üretir. */
+export function muhurluKlasorMu(yol: string): boolean {
+  return parcala(yol).some((p) => dosyaMuhru(p) !== undefined);
 }
 
 export const DISLANAN_ADLAR = [
@@ -92,7 +103,7 @@ export function gurultuMu(yol: string): boolean {
  * değildir, ürün ağacıdır ve turu tetikler (KPS-IND-A01).
  */
 export function sarGurultuMu(yol: string): boolean {
-  return gurultuMu(yol) || DERS_RAFI.test(yol) || SINAMA_FIKSTURU.test(yol) || muhurluSarMi(yol);
+  return gurultuMu(yol) || DERS_RAFI.test(yol) || SINAMA_FIKSTURU.test(yol) || muhurluSarMi(yol) || muhurluKlasorMu(yol);
 }
 
 /**

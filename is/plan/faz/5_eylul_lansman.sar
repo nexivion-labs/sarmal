@@ -3577,6 +3577,25 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           ]
           sınır: "Bu Adım istemin BOYUTUNU denetimsiz büyütemez. Bugünkü istem yaklaşık bin beş yüz jetondur; tam bağlam eklendiğinde her Adım için bütçe ölçülür ve kart kırpma davranışı korunur. Bağlamı peşin vermenin araç kullanımını öldürdüğü daha önce ölçülmüştü; aynı tuzağa düşülmez."
         }
+        Adım( kod: OSS-A11, ad: "Beceri Tetikleyicilerinin Kapsamı, Seçiciliği ve Çağrı Yolu", durum: beklemede, öncelik: p0, bağımlı: [],
+          onayBekler: founder,
+          referans: [ OGR-2.2, TIP-1.5, MEK-SEF, OSS-A07 ],
+          ne: "🎯 Founder 2026-11-05 gecesi beceri tetikleyicilerinin hiçbirinin çalışmadığını bildirmiştir ve aynı gece yapılan ölçüm üç kusuru ortaya koymuştur. Birincisi kapsamdır: kadrosu kardeş bir kökte yaşayan bir çalışma alanında, kendi kökünden çağrılan sef geliştirmedeki bir Adım için hiç kart getirmemiş, aynı Adım çatıdan çağrıldığında ise 24 kart gelmiştir. İkincisi seçiciliktir: motor yalnız Adımın durumuna bakan yapısal koşulları değerlendirebilmekte, düz cümleyle yazılmış koşulları hiç değerlendirmemektedir; bu yüzden yapısal koşullu kartlar ilgisiz Adımlarda da ateşlenmiş, gelen kartların tamamı bütçeye sığmadığı için anlamını yitirecek ölçüde kırpılmıştır. Üçüncüsü çağrı yoludur: kartlar yalnız biri sef aracını çağırdığında ortaya çıkar ve bir ajan oturumu bunu kendiliğinden yapmaz." ) {
+          görev: [
+            "Kart arayışını çatı ilanına bağla: bir proje kendi kökünden sef çağırdığında çatıda duyurulmuş kardeş köklerdeki Beceri ve Tetikleyici düğümleri de bulunur; proje kimliği yine kendi kökünden türer (ORK-4 ad alanı).",
+            "Tetikleyici koşul dilini yapısal seçicilerle genişlet: Adımın projesi, AltKatmanın departmanı, Katmanın takımı ve Adıma görevli Etmen. Değerlendirilemeyen düz cümle koşulu sessizce yok sayılmaz; denetimde bir tanıyla bildirilir.",
+            "Kart bütçesini sıralamaya bağla: koşulu en dar eşleşen kartlar önce ve tam metniyle gelir, sığmayanlar kırpılmak yerine adlarıyla listelenir.",
+            "Çağrı yolunu kur: bir Adım durum-guncelle ile geliştirmeye alındığında sef çıktısı kendiliğinden üretilir ve ajanın önüne konur; dış araç köprüsü bu çıktıyı kullanabilsin diye biçimi belgelenir."
+          ]
+          kabul: [
+            "Kardeş kökte kadrosu olan bir fikstürde proje kökünden çağrılan sef ilgili kartları getirir (testli).",
+            "Departmanı ve projesi farklı iki Adım için gelen kart kümeleri birbirinden ayrışır; ilgisiz kart gelmez (testli).",
+            "Değerlendirilemeyen bir koşul denetimde tanı üretir ve bu, bozularak kanıtlanmıştır.",
+            "Bütçeyi aşan kümede hiçbir kart yarım cümleyle kırpılmaz; sığmayanların adları listelenir.",
+            "Geliştirmeye alınan bir Adım için sef çıktısının kendiliğinden üretildiği ölçülmüştür; çekirdek ve eklenti süitleri yeşildir."
+          ]
+          sınır: "Bu Adım motorun değerlendirme dilini ve çağrı yolunu kurar; kardeş depolardaki kadronun koşullarını yeniden yazmak o deponun kendi işidir. Açık depoya kapalı kadronun içeriği ya da adları yazılmaz."
+        }
       }
 
       AltKatman( kod: ALT-OSS-ISTEM-INCELEME, ad: "Kabul Denetiminin Graf Üzerinden İzlenmesi", departman: inceleme,
@@ -4475,6 +4494,40 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           sınır: "Bu Adım yalnız koni ölçütünün hangi evrene uygulandığını düzeltir; kanon metnine, kanonun dosyalara bölünüşüne ve eşik değerine dokunmaz."
           dokunulmaz: [ "Kanon metni ve kanon madde sayısı", "Koni eşiğinin değeri", "yasa/kanon/ork.sar dosyasının bölünüşü" ]
           koşu: "2026-09-11 · ÜRETİCİ TESLİMİ: koni yükü artık kapsam çözümünün üstüne kurulan tek bir predikatla sayılır ve joker kapsamlı (genel, tümü) bir kural, tipi şemada Yasa rolünde olan düğüme (TIP-1.16: Karar, Politika, Kural, Anayasa, Mevzuat ve kural tipleri) yük olarak düşmez, düğümü adıyla, ailesiyle ya da koduyla anan kural ise düşer. Ölçüt dosya yolundan değil, kuralın kapsam beyanı ile düğüm tipinin rol beyanından türer; koni sayımı ile panelin düğüme düşen kural listesi aynı predikatı ve aynı şema evrenini sürer, M-3 yapısal değerlendirmesi ise eski kapsam çözümünde kalır. Depo denetimi sıfır hata ve sekiz uyarıdan sıfır hata ve sıfır uyarıya indi, kullanıcı evreninde yirmi bir genel kural Blok ile Adımda taşma üretmeyi sürdürdü; beş yeni nöbet kuruldu, dört mutasyonun dördü beklenen nöbetleri kırmızıya düşürdü ve iki tür denetimi sıfır hata, çekirdek süiti bin üç yüz yetmiş yedide bin üç yüz yetmiş yedi, eklenti süiti yedi yüz elli yedide yedi yüz elli yedi verdi."
+        }
+
+        // ── FOUNDER HÜKMÜ · 2026-11-03 · KLASÖR MÜHRÜ ──
+        //   Founder çok projeli bir çalışma alanında bütün bir arşiv klasörünün canlı
+        //   kaynaktan ayrılmasını istemiştir. 2026-11-03 gecesi kurulan iki projeli maket
+        //   şunu göstermiştir: adının başında `@ARSIV@_` taşıyan bir klasörün içine motor
+        //   iner, arşivdeki eski Proje kökünü canlı kökle aynı kodla okur ve "ad alanı
+        //   olmadan ayrışamayan Proje kökü" uyarısıyla ilk tanımı kazandırır. Mühür bugün
+        //   yalnız dosya adına basılabilmektedir (MIM-3.4, kimlik.ts okunmazMuhurlu). Founder
+        //   aynı gece mührün klasör adına da basılabilmesine hükmetmiştir; hüküm tahmin
+        //   değil açık beyandır ve MIM-3.4'ün klasör adından tahmin yürüten eski kuralı
+        //   kaldırma gerekçesini korur.
+        Adım( kod: KPS-MHR-A02, ad: "Klasör Mührünün Kanona ve Motora İnmesi", durum: geliştirmede, öncelik: p0,
+          bağımlı: [ KPS-MHR-A01 ], referans: [ MIM-3, MIM-3.4, OGR-3 ],
+          üretir: [ KOD-KIMLIK, KOD-DENETIM, KOD-SNM-KLASOR-MUHRU, KOD-SNM-EKL-KLASOR-MUHRU ],
+          onay: "onaylandı — 2026-11-03 · FOUNDER: kontrolcünün maket ölçümüyle sunduğu klasör mührü önerisi kabul edilmiş ve işin aynı gece başlatılmasına hükmedilmiştir.",
+          ne: "📛 Bir klasörün adının başına yazılan dosya mührünün o klasörün bütün içeriğini kapsaması. Çok projeli bir çalışma alanında işi bitmiş bir projeyi ya da eski bir çalışma alanını arşive almak, içindeki her .sar dosyasını tek tek yeniden adlandırmayı gerektirmektedir; bu hem binlerce dosyaya dokunmak hem de git tarihini kirletmek demektir. Mühürsüz bırakılan arşiv ise canlı projelerle aynı kodu taşıdığında motor iki kökü ayıramaz ve ilk tanımı kazandırır." ) {
+          görev: [
+            "MIM-3.4 maddesini mührün dosya adına olduğu gibi klasör adına da basılabileceğini söyleyecek biçimde genişlet: `@ARSIV@_` ve `@SONRA@_` mühürlü bir klasörün içine motor inmez, `@EGITIM@_` mühürlü klasörün içeriği okunur ve doğrulanır fakat karneye ve gündeme sayılmaz; kanon sayısının dondurulduğu yerleri ve türetilmiş yüzleri aynı turda güncelle.",
+            "Motorda mühür çözümünü tek noktada tut: disk taraması mühürlü bir klasörü kayda alır fakat içine inmez ve klasörü denetim çıktısında türüyle ve adıyla listeler; kod dizini, graf, karne, açık iş gündemi ve kardeş kök çözümü aynı çözücüyü okusun. Mühürlü klasörün içindeki Proje kökü kardeş kök sayılmaz ve ad alanı çözümüne girmez.",
+            "Mührün sessiz olmamasını sağla: mühürlü klasör her denetimde listelenir, ebedî kural taşıyan bir dosyayı içeren klasöre arşiv mührü basılması ebedî ihlal tanısıyla durdurulur ve büyük harfli fakat geçersiz bir klasör adı bildirilir.",
+            "Kuralı eklentiye taşı: panelin yol haritası ve sayımları mühürlü klasörü motorun ayrımıyla birebir aynı biçimde dışarıda bıraksın; değişiklik günlüğüne tam cümlelerle bir girdi yaz ve eklenti sürümünü bir artır.",
+            "OGR-3 uyarınca hükmü ajan bağlam paketine, karşılama kartına, öğretim aracının kartlarına ve doğuş rehberine üreticiyle işle.",
+            "Nöbet kur ve mutasyonla kanıtla: aynı Proje kodunu taşıyan arşiv klasörünün çakışma üretmediği, mühürsüz aynı klasörün çakışma uyarısını sürdürdüğü, eğitim mühürlü klasörün sayılmadığı ve ebedî engelin çalıştığı ayrı ayrı sınansın."
+          ]
+          kabul: [
+            "MIM-3.4 maddesi klasör mührünü kapsar ve kanon tutarlılık ile belge yüzü nöbetleri yeşildir.",
+            "Bir canlı projeyi ve aynı Proje kodunu taşıyan `@ARSIV@_` önekli bir klasörü barındıran sınav çalışma alanında denetim çakışma uyarısı üretmez, arşiv klasörü çıktıda adıyla listelenir ve klasörün içindeki hiçbir tanı sayıma girmez; mühür kaldırıldığında çakışma uyarısı geri döner.",
+            "Ebedî kural taşıyan bir dosyayı içeren klasöre arşiv mührü basıldığında denetim hata verir.",
+            "Eklentinin panel sayımları ile motorun sayımı mühürlü klasör varken aynı sonucu verir.",
+            "Nöbetler mutasyonla kanıtlanmıştır; çekirdek ile eklenti süitleri yeşildir ve depo denetimi sıfır hata ile sıfır uyarı verir."
+          ]
+          sınır: "Bu Adım mekanizmayı Sarmal'ın kendi deposunda kurar; herhangi bir kullanıcı çalışma alanındaki klasörü yeniden adlandırmak bu Adımın işi değildir. Klasör adından tahmin yürüten hiçbir kural geri getirilmez; muafiyet yalnız açık mühürle doğar. Mevcut dosya mühürlerinin davranışı değişmez."
+          dokunulmaz: [ "MIM-3.4'ün dosya mührüne ilişkin mevcut hükmü", "Mevcut .sar dosyalarının adları", "Öğreti kitaplığındaki ders raflarının klasör yeriyle tanınması" ]
         }
       }
 
@@ -6998,6 +7051,29 @@ sessizce körleşmez.
           ]
           sınır: "Bu Adım kusurları düzeltmez; bulgular PNL-A29 ya da yeni Adımlara iner. Depo koduna ve kullanıcının dosyalarına yazılmaz."
         }
+
+        Adım( kod: PNL-A31, ad: "Çalışma Alanının Katları ve Logosu", durum: geliştirmede, öncelik: p0, bağımlı: [ PNL-A11 ],
+          onayBekler: founder,
+          referans: [ OZK-16 ],
+          üretir: [ KOD-BINA, KOD-BINA-GORUNUM, KOD-YOLHARITA, KOD-YOLHARITA-CEKIRDEK, KOD-PANEL, KOD-PANEL-CEKIRDEK, KOD-TREN-CEKIRDEK, KOD-TREN-GORUNUM, KOD-TREN-BETIK, KOD-YUZEY-METINLERI, KOD-DENETCI, KOD-DENETIM, KOD-TANI-METINLERI, KOD-TANI-SICILI, KOD-SNF-KANON, KOD-SNM-BINA, KOD-SNM-BINA-GORUNUMU, KOD-SNM-YENI-KANON ],
+          ne: "🏢 Founder 2026-11-04 tarihinde çok ofisli bir çalışma alanının panelde bir bina gibi görünmesine hükmetmiştir. Bugün yol haritası çalışma alanının altındaki bütün projeleri alfabetik ve düz bir liste olarak dizmekte, kuralların ve kararların yaşadığı yönetim katını öteki ofislerden ayırmamaktadır; Tren sekmesindeki şirket şeması da aynı ayrımı göstermemektedir. Founder önizlemeden üç seçim yapmıştır: katlar Kitaplık düğümüne eklenen isteğe bağlı bir kat alanıyla ilan edilir ve klasörler yerinden oynamaz; birinci kat yönetim katıdır, ikinci kat çalışan ofislerin katıdır ve kişisel ile arşiv kitaplıkları bina dışında ayrı bir şeritte durur; şirket şemasında kanon (yasa ve kararlar, bir ajan değildir · H9) ile lider ajan birinci katın bandında, ofis ajanları ikinci katın bandında, teknoloji kadrosu bunların altında görünür. Founder ayrıca lider ajanın altında iş akışı ajanlarının yer alacağını ve bunların zamanla ilan edileceğini bildirmiştir; şema bu ajanlar için şimdiden yer ayırmalıdır. Çalışma alanının logosu yol haritasının ve şemanın tepesinde durur." ) {
+          görev: [
+            "Tip kanonuna iki isteğe bağlı alan ekle: Kitaplık için pozitif tam sayı alan kat ve ÇalışmaAlanı için çalışma alanı köküne göreli bir SVG dosya yolu alan logo. Alanlar yalnız ekleme yapar; var olan hiçbir ilan değişmeden geçerli kalır. Kat alanını taşıyan bir Kitaplık başka bir kat Kitaplığının içinde yaşıyorsa ve logo dosyası diskte yoksa motor açık bir tanı verir.",
+            "Yol haritasında kat alanı taşıyan bir çalışma alanının çocuklarını katlara göre grupla: en üstte logo ve çalışma alanının adı, altında artan kat sırasıyla kat bantları, her bantta o katın Kitaplıklarına düşen projeler ilan sırasıyla durur; katsız kitaplıkların projeleri en altta bina dışı şeridinde görünür. Kat alanı hiç kullanılmamışsa bugünkü görünüm aynen korunur.",
+            "Tren sekmesindeki şirket şemasını aynı katlara göre bantla: birinci katın bandında kanon kutusu ile apex koltuğu, onun altında iş akışı ajanları için ayrılmış bir şerit durur. Bu şerit İşAkışı ile ilişkilendirilmiş ve apex tarafından yönetilen ajanları gösterir; böyle bir ajan henüz ilan edilmemişse şerit bugünkü boş lider ajan yuvası gibi tanımlı değil yazan boş yuvalarla çizilir ve hiçbir örnek veri gösterilmez. Ajanlar ilan edildikleri dosyanın kapsandığı Kitaplığın katına düşer; hiçbir kata düşmeyen teknoloji kadrosu bantların altında bugünkü departman sütunlarında kalır.",
+            "Logoyu webview içinde güvenli biçimde göster: dosya çalışma alanı kökünün dışına çıkamaz, yalnız SVG kabul edilir ve içerik betik ile dış kaynak taşımayacak biçimde süzülür.",
+            "Değişikliği görsel kontrol düzeneğinde çok katlı ve logolu bir örnek çalışma alanıyla ekran görüntüsü alarak sına; ekran görüntüsüne yazan ajan kendisi bakar ve Founder'a teslimde gösterilir."
+          ]
+          kabul: [
+            "kat ve logo alanları siniflama aracında görünür; alanı taşımayan ilanlar önceki gibi temiz geçer ve iki yeni tanının her biri bir nöbetle ölçülür.",
+            "Kat alanı taşıyan bir çalışma alanında yol haritası projeleri kat bantlarında, katsızları bina dışı şeridinde gösterir; kat alanı olmayan bir çalışma alanının görünümü değişmemiştir. İkisini de bir nöbet ölçer.",
+            "Şirket şemasında birinci kat bandında kanon kutusu, apex koltuğu ve iş akışı şeridi görünür; iş akışı ajanı ilan edilmemişse şerit boş yuvalarla çizilir ve bir ajan apex tarafından yönetilen İşAkışı ajanı olarak ilan edildiğinde yuvası kendiliğinden dolar. Bunu bir nöbet ölçer.",
+            "Kök dışına çıkan, SVG olmayan ya da betik taşıyan bir logo gösterilmez ve tanı alır; bunu bir nöbet ölçer.",
+            "Çekirdek süiti, eklenti süiti, gerçek VS Code süiti ve görsel kontrol yeşildir; deponun denetimi sıfır hata verir ve ekran görüntüleri Founder'a sunulmuştur."
+          ]
+          sınır: "Klasörler taşınmaz ve hiçbir kullanıcı ilanı bu Adımda yazılmaz; kat ve logo değerlerini çalışma alanının sahibi kendi ilanına yazar. Açık depoya hiçbir şirketin adı, logosu ya da ofis adı girmez; örnekler uydurma ve nötr adlar taşır. Sütunlar ve kart ızgarası görünümleri, ofis gruplamasının Makinist sekmesine taşınması ve iş akışı ajanlarının kendileri bu Adımın işi değildir. Şemaya yalnız iki isteğe bağlı alan eklenir; var olan hiçbir alan ya da tip değişmez (Founder onayı 2026-11-04)."
+          koşu: Koşum( kod: KSM-PNL-A31, tarih: 2026-11-05, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "bina görünümü nöbeti 15/15 yeşil; yönetim katının düzenlemesi, bina dışı klasör sayımı ve dizin listeleme sınırı geçici olarak bozulduğunda nöbetler sırasıyla üç, bir ve bir sınamada kırmızıya düştü · eklenti süiti 1198/1198, çekirdek süiti 1816/1816, üç tip denetimi ve eslint temiz · gerçek çatı dökümünde yönetim katı 16 kural · 5 yönetmelik · 35 karar başlığıyla, altında Anayasa (16 kural), Yönetmelikler (5), Kararlar (35 · 33 kilitli · 2 bekliyor) ve Arayüz Dili gruplarıyla çıktı, katta proje satırı ve plan satırı kalmadı; bina dışında iki klasörlü ve on iki mühürlü klasörlü satırlar çıktı · görsel kontrol düzeneği gerçek çatıda 851/851 geçti; dar panelde Mini Graf panelin dibinde, katlıyken yalnız başlık satırı · 0.9.205 paketlendi ve kuruldu", ne: "Founder 2026-11-04 gecesi yönetim katının proje çağırmamasına, katın altında yalnız tiplerden türeyen yasa gruplarının durmasına, kat başlığına tıklanınca anayasanın açılmasına ve yönetim projesinin proje sayısına girmemesine hükmetmiştir; gerekçe, yönetim katının yasanın yeri olması ve plan ağacının orada yönetimin ruhuna aykırı bir proje görüntüsü vermesidir. Founder aynı gece bina dışındaki projesiz kitaplıkların klasör sayısıyla görünmesini ve tıklanınca gezginde gösterilmesini onaylamıştır; gerekçe, satırın boş görünüp tıklamaya cevap vermemesi ve mühürlü klasörlerin içine inilmeden yalnız sayılabilmesidir. Founder aynı gece dar panelde Mini Graf başlığının panelin dibine yapışmasını onaylamıştır; gerekçe, ağaç uzayınca Mini Grafın içerikle birlikte ekrandan itilmesi ve başlığa ulaşmak için en alta kaydırmak gerekmesidir." )
+        }
       }
     }
 
@@ -7365,6 +7441,11 @@ Kod( kod: KOD-SNM-DOSYA-MUHRU, dosya: "urun/cekirdek/sinama/dosya-muhru.test.ts"
   ne: "📛 Dosya mühürleri nöbeti — sekiz sınama: tek çözücü ile biçim kuralı, arşiv ile sonra mühürlü dosyanın okunmaması, eğitim mühürlü dosyanın doğrulanıp karneye girmemesi, listeleme, ebedî engel, geçersiz ad, mühürlü giriş dosyası ve bekleme süresinin kaynağı; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MHR-A01)" )
 Kod( kod: KOD-SNM-EKL-DOSYA-MUHRU, dosya: "urun/eklenti/sinama/dosya-muhru-esitligi.test.ts",
   ne: "📛 Panel ile motorun dosya mührü eşitliği nöbeti — eklentinin gerçek tur hattının yüzey sayımı ile Adım evreni, motorun tür dökümü ve karnesiyle birebir karşılaştırılır (KPS-MHR-A01)" )
+// 🍎 KPS-MHR-A02 (2026-11-03): klasör mührünün nöbetleri
+Kod( kod: KOD-SNM-KLASOR-MUHRU, dosya: "urun/cekirdek/sinama/klasor-muhru.test.ts",
+  ne: "📛 Klasör mührü nöbeti — altı sınama: tek çözücü ile klasör adı kuralı, aynı Proje kodunu taşıyan arşiv klasörünün çakışma üretmemesi ve mühür kalkınca çakışmanın geri dönmesi, eğitim mühürlü klasörün doğrulanıp karneye girmemesi, ebedî engel, geçersiz klasör adı ve kardeş kök çözümü; mutasyon kanıtı dosyanın başlığında yazılıdır (KPS-MHR-A02)" )
+Kod( kod: KOD-SNM-EKL-KLASOR-MUHRU, dosya: "urun/eklenti/sinama/klasor-muhru-esitligi.test.ts",
+  ne: "📛 Panel ile motorun klasör mührü eşitliği nöbeti — eklentinin gerçek tur hattının yüzey sayımı ile Adım evreni, mühürlü klasör varken motorun tür dökümü ve karnesiyle birebir karşılaştırılır (KPS-MHR-A02)" )
 
 // 🍎 KPS-ADA-A01 son teslim (2026-09-19): ad alanlı atfın üç durumlu doğrulanması
 Kod( kod: KOD-SNM-AD-ALANI-DOGRULAMA, dosya: "urun/cekirdek/sinama/ad-alani-dogrulama.test.ts",
@@ -7658,3 +7739,13 @@ Kod( kod: KOD-SNM-TREN-YUVASI, dosya: "urun/eklenti/sinama/tren-yuvasi.test.ts",
   ne: "🧪 Kardeş yuvasının nöbeti — sürüm denetimi, tek kayıt, gövde sınırı, sahiplik, görünürlük bildirimi, eylem süzgeci ve Canlı'nın kendiliğinden seçilmemesi (PNL-A13)" )
 Kod( kod: KOD-SNM-VSC-TREN-YUVASI, dosya: "urun/eklenti/sinama_vscode/suite/tren-yuvasi.test.ts",
   ne: "🧪 Kardeş yuvasının gerçek VS Code nöbeti — sahte kardeş eklentiyle kayıt, gövde güncellemesi ve bırakılınca Plan'a dönüşü ölçer (PNL-A13)" )
+
+// 🍎 PNL-A31 teslimi (2026-11-04): çalışma alanının katları ve logosu
+Kod( kod: KOD-BINA, dosya: "urun/cekirdek/src/bina.ts",
+  ne: "🏢 Çalışma alanının bina okumasının saf çekirdeği — Kitaplık kat alanını ve ÇalışmaAlanı logo alanını okur, etkin katı atadan devralır, iç içe ve pozitif olmayan katı kusur sayar ve logoyu kök dışı, SVG olmayan, betik ya da dış kaynak taşıyan içerikte reddeder (PNL-A31)" )
+Kod( kod: KOD-BINA-GORUNUM, dosya: "urun/eklenti/src/bina-gorunum.ts",
+  ne: "🏢 Binanın tepesinin ve kat bantlarının saf çizimi — çalışma alanının adını ve yalnız veri adresi biçimindeki logoyu img içinde basar; Ray ve Tren sekmeleri ortak kullanır (PNL-A31)" )
+Kod( kod: KOD-SNM-BINA, dosya: "urun/cekirdek/sinama/bina.test.ts",
+  ne: "🧪 Bina okumasının nöbeti — etkin katın atadan devralındığını, iç içe ve pozitif olmayan katın kusur sayıldığını ve kök dışı, sembolik bağlı, SVG olmayan, betikli ya da dış kaynaklı logonun reddedildiğini ölçer (PNL-A31)" )
+Kod( kod: KOD-SNM-BINA-GORUNUMU, dosya: "urun/eklenti/sinama/bina-gorunumu.test.ts",
+  ne: "🧪 Bina görünümünün nöbeti — yol haritasının kat bantlarını ve bina dışı şeridini, katsız çalışma alanının değişmeyen görünümünü, Tren şemasının kanon kutusunu, apex koltuğunu ve iş akışı yuvalarını ve logonun güvenli çizimini ölçer (PNL-A31)" )

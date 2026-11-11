@@ -36,7 +36,7 @@ import {
 const KOK = fileURLToPath(new URL("../../..", import.meta.url));
 const KANON_SHA = [
   "dil.sar:3ed77f36fc53f5d048365b7134685d96e2b71eb847adccc39e144f139539de92",
-  "mim.sar:5749d49cbd2ecd6dd96e228072a8348190b3e81293a7f7c3785023b50583c95a",
+  "mim.sar:cefc34cd6c6f708660414eb354d05c868170216a16e2238564456309b3f0957a",   // PNL-A31: MIM-3.2 kat ve logo alanlarıyla genişledi (önce KPS-MHR-A02: MIM-3.4 klasör mührü)
   "ogr.sar:ed91c13959ae35594b225b5fe066389fc20b10cbb43f888bb563c02e72cd0d67",
   "ork.sar:1040891c95d9001644cd39fe577821b59557ebd11f652df72da1da14ca8881d3",
   "str.sar:2146dd7647c0d06738de30e4e73ce0c38b0019ad9ca5aeb9b4e75e767635784e",

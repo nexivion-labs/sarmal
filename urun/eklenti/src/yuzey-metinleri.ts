@@ -2975,3 +2975,92 @@ export const SINYAL_METINLERI = {
     `${dur} Dur · ${dikkat} Dikkat sinyali. Tıklayınca Sinyaller sekmesinde bu düğümün satırları seçilir.`,
     `${dur} Stop · ${dikkat} Caution signals. Select to highlight this node's rows in the Signals tab.`),
 } as const;
+
+// ── 🏢 PNL-A31: ÇALIŞMA ALANININ KATLARI VE LOGOSU ──────────────────────────
+/** Bina görünümünün metinleri: yol haritasının kat bantları ve Tren şemasının bantları. */
+export const BINA_METINLERI = {
+  /** Kat bandının adı; birinci kat yönetim katı, üst katlar ofislerdir (bina modeli · Founder şeması 2026-11-04). */
+  katAdi(kat: number): string {
+    return kat === 1 ? yuzeyMetni("1. Kat · Yönetim", "Floor 1 · Management") : yuzeyMetni(`${kat}. Kat · Ofisler`, `Floor ${kat} · Offices`);
+  },
+  katIpucu(ad: string): string {
+    return yuzeyMetni(`${ad}\nBu kat, kat alanı taşıyan kitaplıklardan okunur.`, `${ad}\nThis floor is read from the libraries that carry a floor field.`);
+  },
+  ofisIpucu(ad: string, dizin: string): string {
+    return yuzeyMetni(`${ad} ofisi\n${dizin}`, `${ad} office\n${dizin}`);
+  },
+  grupIpucu(ad: string, dizin: string): string { return `${ad}\n${dizin}`; },
+  /** Müşteri satırının ipucu: görünen ad, Profilin adı (görünen addan farklıysa) ve dizin. */
+  musteriIpucu(ad: string, profilAdi: string | undefined, dizin: string): string {
+    const ilk = profilAdi && profilAdi !== ad ? `${ad} · ${profilAdi}` : ad;
+    return yuzeyMetni(`Müşteri: ${ilk}\n${dizin}`, `Client: ${ilk}\n${dizin}`);
+  },
+  /** Bina dışı satırı: katı ilan edilmemiş üst kitaplıkların adlarıyla. */
+  binaDisiSatiri(adlar: readonly string[]): string {
+    return [yuzeyMetni("Bina dışı", "Outside the building"), ...adlar].join(" · ");
+  },
+  get binaDisiIpucu(): string {
+    return yuzeyMetni("Kat alanı taşımayan kitaplıklar ve onların projeleri", "Libraries without a floor field and their projects");
+  },
+  // Yönetim katının yasa görünümü (Founder onayı 2026-11-04 gecesi): proje açılınca yasası görünür.
+  /** Yönetim katının (ya da yönetim projesinin yasa başlığının) açıklaması: Kural, yönetmelik ve Karar sayıları. */
+  yasaAciklamasi(kural: number, yonetmelik: number, karar: number): string {
+    const c = (n: number, t: string, e: string): string => yuzeyMetni(`${n} ${t}`, `${n} ${e}${n === 1 ? "" : "s"}`);
+    return [c(kural, "kural", "rule"), c(yonetmelik, "yönetmelik", "regulation"), c(karar, "karar", "decision")].join(" · ");
+  },
+  get yasaAnayasa(): string { return yuzeyMetni("Anayasa", "Constitution"); },
+  /** Tek Anayasası olan projede grubun adı Anayasanın adını taşır. */
+  yasaAnayasaAdli(ad: string): string { return `${yuzeyMetni("Anayasa", "Constitution")} · ${ad}`; },
+  get yasaYonetmelik(): string { return yuzeyMetni("Yönetmelikler", "Regulations"); },
+  get yasaKararlar(): string { return yuzeyMetni("Kararlar", "Decisions"); },
+  get yasaArayuz(): string { return yuzeyMetni("Arayüz Dili", "Interface Language"); },
+  /** Boş grubun açıklaması: yasa katmanı henüz yazılmamıştır, grup yerini korur. */
+  get yasaBos(): string { return yuzeyMetni("boş", "empty"); },
+  kuralSayisi(n: number): string { return yuzeyMetni(`${n} kural`, `${n} rule${n === 1 ? "" : "s"}`); },
+  /** Kararlar grubunun açıklaması: toplam ve durum dağılımı (`35 · 33 kilitli · 2 bekliyor`). */
+  kararDagilimi(toplam: number, durumlar: ReadonlyArray<readonly [string, number]>): string {
+    return [String(toplam), ...durumlar.map(([d, n]) => `${n} ${d}`)].join(" · ");
+  },
+  get yasaIpucu(): string {
+    return yuzeyMetni("Yönetim katı proje çağırmaz; yalnız yasası görünür: anayasa, yönetmelikler, kararlar ve arayüz dili. Tıklayınca anayasa açılır.",
+      "The management floor calls no projects; only its law is shown: constitution, regulations, decisions and interface language. Select to open the constitution.");
+  },
+  yasaGrubuIpucu(ad: string): string {
+    return yuzeyMetni(`${ad}\nBu grup düğüm tiplerinden türer.`, `${ad}\nThis group is derived from node types.`);
+  },
+  /** Yasa satırının ipucu: tip, kod ve (Karar için) durum. */
+  yasaSatiriIpucu(tip: string, kod: string, durum?: string): string {
+    return `${tip} · ${kod}${durum ? ` · ${durum}` : ""}`;
+  },
+  // Bina dışı kitaplıkların klasör satırları
+  klasorSayisi(klasor: number, muhurlu: number): string {
+    const k = klasor ? yuzeyMetni(`${klasor} klasör`, `${klasor} folder${klasor === 1 ? "" : "s"}`) : "";
+    const m = muhurlu ? yuzeyMetni(`${muhurlu} mühürlü klasör`, `${muhurlu} sealed folder${muhurlu === 1 ? "" : "s"}`) : "";
+    return [k, m].filter(Boolean).join(" · ") || yuzeyMetni("boş", "empty");
+  },
+  /**
+   * Bina dışı klasör satırının ipucu: kitaplığın adı, kendi ilanındaki `ne` metni (alanın kuralı orada
+   * yazılıdır), dizin ve sayımın nasıl yapıldığı. Mühürlü klasörlerin içi okunmaz.
+   */
+  klasorIpucu(ad: string, ne: string | undefined, dizin: string, muhurlu: number): string {
+    const muhur = muhurlu
+      ? yuzeyMetni("Mühürlü klasörleri motor okumaz; içleri taranmaz, yalnız adları sayılır.", "The engine does not read sealed folders; their contents are not scanned, only their names are counted.")
+      : yuzeyMetni("Klasörlerin içine inilmez, yalnız adları sayılır.", "Folders are not entered; only their names are counted.");
+    const tik = yuzeyMetni("Tıklayınca klasör gezginde gösterilir.", "Select to reveal the folder in the Explorer.");
+    return [ad, ne, dizin, `${muhur} ${tik}`].filter(Boolean).join("\n");
+  },
+  logoAlt(ad: string): string { return yuzeyMetni(`${ad} logosu`, `${ad} logo`); },
+  // Tren şemasının bantları
+  get kanonBasligi(): string { return yuzeyMetni("Kanon", "Canon"); },
+  get kanonAciklamasi(): string { return yuzeyMetni("yasa ve kararlar · bir ajan değildir", "laws and decisions · not an agent"); },
+  kanonSayaci(yasa: number, karar: number): string {
+    return yuzeyMetni(`${yasa} kural · ${karar} karar`, `${yasa} rule${yasa === 1 ? "" : "s"} · ${karar} decision${karar === 1 ? "" : "s"}`);
+  },
+  get kanonYok(): string { return yuzeyMetni("Bu katta kanon · tanımlı değil", "Canon on this floor · not defined"); },
+  get isAkisiBasligi(): string { return yuzeyMetni("İş akışı ajanları", "Workflow agents"); },
+  get isAkisiIpucu(): string {
+    return yuzeyMetni("Lider ajanın yönettiği ve bir İşAkışı düğümünü yöneten ajanlar", "Agents managed by the lead agent that manage an İşAkışı node");
+  },
+  get isAkisiYuvasi(): string { return yuzeyMetni("İş akışı ajanı · tanımlı değil", "Workflow agent · not defined"); },
+  get katsizKadro(): string { return yuzeyMetni("Katı ilan edilmemiş kadro", "Staff without a declared floor"); },
+};

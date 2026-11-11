@@ -201,5 +201,5 @@ Contribution flow is in [CONTRIBUTING.md](CONTRIBUTING.md), conduct in [CODE_OF_
 
 ## Measured surfaces
 
-The new diagnostic set contains 50 errors, 25 warnings, and 21 informational diagnostics. The fixed registry routing matrix sends 156 items to Problems, 3 to Reminders, and 38 to Notifications (Observations). 196 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
+The new diagnostic set contains 50 errors, 27 warnings, and 21 informational diagnostics. The fixed registry routing matrix sends 158 items to Problems, 3 to Reminders, and 38 to Notifications (Observations). 198 diagnostic messages, the descriptions of 18 MCP tools, the manifest, the welcome card and these document surfaces are bilingual; the numbers are measured from source, never typed by hand.
 <!-- SARMAL:URETILEN:KOK-README-EN:SON -->

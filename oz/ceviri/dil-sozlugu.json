@@ -228,6 +228,8 @@
     "hizmetler": {"en":"services"},
     "marka": {"en":"brand"},
     "kanallar": {"en":"channels"},
+    "kat": {"en":"floor"},
+    "logo": {"en":"logo"},
     "kişiler": {"en":"people"},
     "sağlar": {"en":"provides"},
     "sınır": {"en":"boundary"},
@@ -532,6 +534,8 @@
   },
   "takmaAdlar": ["bağımlılık"],
   "semaAlani": {
+    "kat (binanın katı: pozitif tam sayı; birinci kat yönetim katıdır, katlı bir Kitaplığın içindeki Kitaplık atasının katını taşır ve kendi katını ilan edemez, katsız Kitaplık bina dışında kalır)": {"en":"kat (the floor of the building: a positive whole number; the first floor is the management floor, a Kitaplık inside a floored Kitaplık carries its ancestor's floor and cannot declare its own, and a Kitaplık without a floor stays outside the building)"},
+    "logo (çalışma alanının logosu: köke göreli, betik ve dış kaynak taşımayan bir SVG dosyasının yolu; panel onu binanın tepesinde gösterir)": {"en":"logo (the workspace logo: the root-relative path of an SVG file that carries no script and no external resource; the panel shows it at the top of the building)"},
     "kanallar (harita: kanal adı → kullanıcı adı ya da alan adı)": {"en":"kanallar (map: channel name → user name or domain name)"},
     "kişiler (liste: her öğe yalnız hitap, rol ve sorumluluk anahtarlarını taşıyan bir harita)": {"en":"kişiler (list: each item is a map carrying only the hitap, rol and sorumluluk keys)"},
     "tanı (liste — bu kuralı zorlayan motor tanı kodları; iddia-doğrulama bekçisi her kodu tanı sicilinde arar, bu yüzden sahte 'MOTORDA' iddiası yazılamaz)": {"en":"tanı (list — the engine diagnostic codes that enforce this Kural; the claim-verification guard looks up every code in the diagnostic registry, so a false 'MOTORDA' claim cannot be written)"},

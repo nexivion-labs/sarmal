@@ -41,12 +41,20 @@ import {
   anadizinHaritasi, evrenCozucu, ogeleriTopla, planAlani, varlikCozucu, varlikKimligi, varliklariKur, koksuzVarlik,
   dagDugumunuCoz,   // ORK-4: ortak kodun panel karşılığı (KPS-KOD-A01 · panel yarısı)
   kardesKarsilastir,   // MIM-1.2: kardeş sırası motorun Faz karşılaştırıcısından (KPS-SIR-A01)
+  binaAgaci, binaBirimi, kapsamIcinde, kendiDeposuMu, klasorSayimi, musteriAdi, type BinaDugumu, type BinaRolu,   // PNL-A31: çalışma alanının bina ağacı ve eklentinin kendi deposu
   type PlanOgesi, type PlanVarligi, type VarlikKimligi,
 } from "./yolharitasi-cekirdek.ts";   // 🪆 EKL-F7-A09: küme ilişkisi vscode'suz çekirdekten · ⚡ PRF-A06: kenar imzası + topolojik sıra belleği · 🗺️ PRF-TA-A03: öğe toplama ile varlık kurulumu
 import { sonTurGoruntusu, turGoruntusunuDinle, type TurGoruntusu } from "./tur-goruntusu.ts";   // 🗺️ PRF-TA-A03: panelin TEK veri kaynağı turun yayınıdır
 import {
-  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi,
+  IZ_METINLERI, YOL_METINLERI, YUZEY_BOS_DURUM, kanonikWidgetAdi, BINA_METINLERI,
 } from "./yuzey-metinleri.ts";
+import {
+  binaOku, logoCoz, projeKitapliklari, projeProfili, yasaKuralSayisi, yasaOku, yolDuzle,
+  type Bina, type BinaKitapligi, type BinaProfili, type Yasa, type YasaDugumu,
+} from "../../cekirdek/src/bina.ts";   // PNL-A31: binanın katları ve yönetim katının yasası motorun kendi okumasından
+import { existsSync, readdirSync, realpathSync, statSync } from "node:fs";
+import { BINA_SIMGESI } from "./bina-gorunum.ts";   // PNL-A31: bina ağacının codicon tablosu (tek kaynak)
+import { join as yolBirlestir, resolve as yolCoz } from "node:path";
 
 // ── YUZ-4 RENK KANUNU (Founder kilidi 2026-07-12): renk = YALNIZ DURUM kanalı.
 //    Karar mantığı SAF modülde (yol-dekor.ts — davranış testli, Terra-RED
@@ -113,7 +121,109 @@ export class YolRenklendirici implements vscode.FileDecorationProvider {
 //  PRF-TA-A03: kaydın kendisi vscode'suz çekirdektedir (yolharitasi-cekirdek.ts);
 //  panel yalnız kimlik türünü, yani gerçek `Uri`yi yerine koyar.
 type Varlik = PlanVarligi<vscode.Uri>;
-type PanelOge = Varlik | Oge | Kosum | Bilgi | BilgiGrup;
+type PanelOge = Varlik | Oge | Kosum | Bilgi | BilgiGrup | KatOge;
+/**
+ * 🏢 PNL-A31: bina ağacının plan düğümü olmayan satırı: kat bandı, varlık kökü olmayan ofis, Kitaplık
+ * grubu (müşteri dâhil) ya da bina dışı satırı. Nesne tur ömürlüdür, böylece açık-kapalı tercihi ve geri
+ * dönüş zinciri aynı satırda kalır. Satırın bütün metni ve simgesi kurulurken bina ağacından okunur.
+ */
+interface KatOge {
+  tur: "kat";
+  /** `yasa`: yönetim katı projesinin yasa grubu ya da yasa düğümü; `klasor`: bina dışındaki projesiz Kitaplık. */
+  bicim: "kat" | "ofis" | "grup" | "musteri" | "disari" | "yasa" | "klasor";
+  /** Satırın kararlı kimliği (çalışma alanının kökü ve Kitaplık dizini ya da kat numarası). */
+  anahtar: string;
+  ad: string;
+  aciklama: string;
+  ipucu: string;
+  /** Codicon kimliği (`BINA_SIMGESI`); kat bandı simgesizdir. */
+  ikon?: string;
+  cocuklar: PanelOge[];
+  ust: PanelOge;
+  /** Tıklanınca tanımına gidilen düğümün konumu (yasa satırları). */
+  hedef?: { dosya: string; satir: number };
+  /** Tıklanınca gezginde gösterilen klasör (bina dışı klasör satırı). */
+  klasor?: string;
+  /** Satır kapalı doğar (yasa grupları ve yasa düğümleri). */
+  kapali?: boolean;
+}
+/**
+ * 🏢 PNL-A31 (Founder hükmü 2026-11-04 gecesi): yönetim katı projesinin yasa görünümü. Yönetim katı proje
+ * çağırmaz: katın altında proje satırı, plan ağacı ve sayaç yoktur, yalnız yasa grupları durur.
+ */
+interface YasaGorunumu {
+  yasa: Yasa;
+  /** Kat başlığına (ya da projenin yasa başlığına) tıklanınca açılan Anayasa düğümü. */
+  hedef?: { dosya: string; satir: number };
+  /** Yönetmelik satırı sayısı (Mekanizma, Politika ve Mevzuat). */
+  yonetmelik: number;
+}
+
+/**
+ * 🏢 PNL-A31: bina dışındaki projesiz bir Kitaplığın klasör sayımı. Dizinin yalnız doğrudan çocuklarının
+ * adları okunur (tek `readdir`, tur başına Kitaplık başına bir kez); mühürlü klasörlerin içine inilmez.
+ */
+function binaKlasorAdlari(dizin: string): Array<{ ad: string; dizin: boolean }> {
+  try { return readdirSync(dizin, { withFileTypes: true }).map((g) => ({ ad: g.name, dizin: g.isDirectory() })); } catch { return []; }
+}
+
+/** 🏢 PNL-A31: bina ağacındaki bir varlık satırının rolü; simge ve (ofiste) ad ile çocuklar buradan gelir. */
+interface BinaYeri {
+  rol: BinaRolu | "ofis";
+  /** Ofis satırında Kitaplığın adı ve proje sayısı. */
+  ad?: string;
+  birim?: number;
+  /** Ofis satırında Kitaplık düzeninden kurulan çocuklar (varlığın kendi plan ögelerinden önce). */
+  cocuklar?: PanelOge[];
+  /** Proje eklentinin kendi deposudur: satır roket yerine Sarmal'ın marka simgesini taşır. */
+  marka?: boolean;
+}
+
+/**
+ * 🏢 PNL-A31: bina ağacının TEK disk okuma kapısı. Okunanlar yalnız iki küçük dosyadır: bina
+ * içindeki varlık köklerinin git yapılandırması (eklentinin kendi deposunu tanımak için) ve çalışma
+ * alanının logosu. Okuma yalnız kat alanı taşıyan bir çalışma alanında ve tur başına bir kez yapılır.
+ */
+function binaDosyasi(yol: string): string | undefined {
+  try { return statSync(yol).isFile() ? readFileSync(yol, "utf8") : undefined; } catch { return undefined; }
+}
+
+/**
+ * 🏢 PNL-A31: bir varlık kökünün git yapılandırma metni. `.git` bir klasörse onun `config` dosyası, bir
+ * dosyaysa (çalışma ağacı) gösterdiği git dizininin ortak dizinindeki `config` okunur. Git deposu
+ * olmayan ya da okunamayan kökte tanımsızdır; karar tanımsızı "kendi deposu değil" sayar.
+ */
+function gitYapilandirmasi(kok: string): string | undefined {
+  const git = yolBirlestir(kok, ".git");
+  if (!existsSync(git)) return undefined;
+  const dogrudan = binaDosyasi(yolBirlestir(git, "config"));
+  if (dogrudan !== undefined) return dogrudan;
+  const m = /^gitdir:\s*(.+)$/m.exec(binaDosyasi(git) ?? "");
+  if (!m) return undefined;
+  const gitDizini = yolCoz(kok, m[1]!.trim());
+  const ortak = binaDosyasi(yolBirlestir(gitDizini, "commondir"));
+  return binaDosyasi(yolBirlestir(ortak !== undefined ? yolCoz(gitDizini, ortak.trim()) : gitDizini, "config"));
+}
+
+/**
+ * 🏢 PNL-A31: binanın kök satırının logo simgesi. Logo çekirdeğin `logoCoz` kararından geçer (kök dışı,
+ * SVG olmayan, betik ya da dış kaynak taşıyan logo reddedilir); reddedilen ya da yazılmamış logoda
+ * satır `organization` simgesine düşer.
+ */
+function binaLogosu(bina: Bina): { logo?: vscode.Uri } {
+  if (!bina.logo) return {};
+  const sonuc = logoCoz(bina.kokDizin, bina.logo.yol, binaDosyasi, (y) => realpathSync(y));
+  return sonuc.tur === "svg" ? { logo: vscode.Uri.file(sonuc.yol) } : {};
+}
+
+/** 🏢 PNL-A31: proje satırının durum anlamının codicon rengi (geometrik ailenin anlam renkleriyle aynı rol). */
+/** 🏢 PNL-A31: Sarmal'ın vektörel marka simgesi (eklenti köküne göreli; paket ilanının simgesiyle aynı çizim ailesi). */
+export const MARKA_SIMGESI = "ikonlar/sarmal.svg";
+
+const ANLAM_TEMA_RENGI: Partial<Record<AnlamRengi, string>> = {
+  basari: "testing.iconPassed", uyari: "charts.yellow", notr: "disabledForeground", aktif: "focusBorder",
+};
+
 // (YUZ-4 süpürmesi: VARLIK_SIMGE emoji haritası kalktı — varlık satırı da kanuna uyar:
 //  şekil=sefer (satır çizelgesinin sefer simgesi · tren dili), renk=durum, tip hover'da.)
 
@@ -305,6 +415,17 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
   // 🪆 EKL-F7-A09: varlıklar arası küme ilişkisi — üstü olmayan köktedir,
   // kapsananlar kapsayıcının çocuğu olarak basılır.
   private varlikUst = new Map<Varlik, Varlik | undefined>();
+  /** 🏢 PNL-A31: kat alanı taşıyan çalışma alanlarının binası, çocukları ve (gösterilebilirse) logo simgesi (tur ömürlü). */
+  private binalar = new Map<Varlik, { bina: Bina; cocuklar: PanelOge[]; logo?: vscode.Uri; birim: number }>();
+  /** 🏢 PNL-A31: bina ağacındaki varlıkların rolü. */
+  private binaYeri = new Map<Varlik, BinaYeri>();
+  /** 🏢 PNL-A31: bina ağacındaki her satırın üstü (geri dönüş zinciri ağacın kendisinden geçer). */
+  private binaUst = new Map<PanelOge, PanelOge>();
+  /**
+   * 🏢 PNL-A31: eklentinin paket ilanındaki depo adresi (`repository.url`). Bina ağacında git uzak adresi
+   * bununla aynı olan proje eklentinin kendi deposudur ve marka simgesini taşır. Kayıtta dolar.
+   */
+  kendiDepoAdresi?: string;
   // ── ZRF-A06 · aktif-varlık nabzı (Founder 2026-07-18: "hangi proje üzerindeysek
   //    o proje ikonu yanıp sönse, aktifliği belli olsun") — imlecin yaşadığı varlığın
   //    roketi tek kalple atar; tazeleme YALNIZ o satırı yeniden çizer (öğe-hedefli fire).
@@ -554,6 +675,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     for (const v of harita.values()) topolojikSirala(v.cocuklar);
     this.varliklar = [...harita.values()].sort((a, b) => a.ad.localeCompare(b.ad, "tr"));
     this.varlikUst = varlikUstleri(this.varliklar);   // 🪆 EKL-F7-A09: küme ilişkisi her turda taze kurulur
+    // 🏢 PNL-A31: kat alanı taşıyan çalışma alanının kapsadıkları kat bantlarına dağılır; katsız
+    // çalışma alanında hiçbir bant kurulmaz ve görünüm bugünkü gibi kalır.
+    this.binaKur(programlar);
     // ZRF-A06: varlık nesneleri yeniden kuruldu — bayat aktif referansı taze eşine bağlanır.
     this.aktifVarlik = undefined;
     this.aktifligiGuncelle(vscode.window.activeTextEditor);
@@ -566,6 +690,212 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     this.olcum?.(IZ_METINLERI.panelTuru(
       new Date().toTimeString().slice(0, 8), Date.now() - turBasi, goruntu.yollar.length, tetik,
     ));
+  }
+
+  /**
+   * 🏢 PNL-A31: kat alanı taşıyan çalışma alanlarının bina ağacını kurar (Founder şeması 2026-11-04).
+   * Ağaç çekirdekteki `binaAgaci` kararından gelir; burada yalnız satır nesnelerine çevrilir. Binanın
+   * içindeki öteki çalışma alanlarının Kitaplık ilanları da okunur (kendi anadizinli ofisin müşterileri
+   * gibi). Bir binanın içindeki ikinci katlı çalışma alanı ayrıca bina sayılmaz: dıştaki bina kazanır.
+   */
+  private binaKur(programlar: ReadonlyMap<string, Program>): void {
+    this.binalar.clear();
+    this.binaYeri.clear();
+    this.binaUst.clear();
+    const kendiDepo = new Map<string, boolean>();
+    const kendiDeposu = (kok: string): boolean => {
+      let k = kendiDepo.get(kok);
+      if (k === undefined) { k = kendiDeposuMu(gitYapilandirmasi(kok), this.kendiDepoAdresi); kendiDepo.set(kok, k); }
+      return k;
+    };
+    const catilar = this.varliklar.filter((v) => v.tip === "ÇalışmaAlanı" && v.anaSar)
+      .sort((a, b) => a.kokDizin.length - b.kokDizin.length);
+    for (const cati of catilar) {
+      if ([...this.binalar.keys()].some((b) => kapsamIcinde(cati.kokDizin, b.kokDizin))) continue;
+      const program = programlar.get(cati.anaSar!);
+      const bina = program ? binaOku(program, cati.anaSar!) : undefined;
+      if (!bina || !bina.katlar.length) continue;
+      const icindekiler = this.varliklar.filter((v) => v !== cati && kapsamIcinde(v.kokDizin, cati.kokDizin));
+      const ek: BinaKitapligi[] = [];
+      for (const v of icindekiler) {
+        if (v.tip !== "ÇalışmaAlanı" || !v.anaSar) continue;
+        const p = programlar.get(v.anaSar);
+        const b = p ? binaOku(p, v.anaSar) : undefined;
+        if (b) ek.push(...b.kitapliklar);
+      }
+      // Yerleşecek varlıklar: üstü çatı ya da bir ofisin kendi varlığı olanlar; öteki alt varlıklar
+      // kendi varlıklarının altında bugünkü gibi kalır.
+      const ofisDizinleri = new Set(bina.kitapliklar.filter((k) => k.kendiKati !== undefined).map((k) => yolDuzle(k.dizin)));
+      const yerlesen = icindekiler.filter((v) => {
+        const u = this.varlikUst.get(v);
+        return u === cati || (u !== undefined && ofisDizinleri.has(yolDuzle(u.kokDizin)));
+      });
+      const agac = binaAgaci(bina, ek, yerlesen);
+      if (!agac) continue;
+      // Müşterinin kimlik kartı: müşteri Kitaplığının içindeki Profil, yoksa müşterinin kendi proje
+      // kökünün Profili (Kitaplığın dizini bir varlık köküyse ya da müşteri serbest duran bir projeyse).
+      const musteriProfili = (d: Extract<BinaDugumu<Varlik>, { tur: "musteri" }>): BinaProfili | undefined => {
+        if (d.kitaplik?.profil) return d.kitaplik.profil;
+        const kendi = d.cocuklar.find((c): c is Extract<BinaDugumu<Varlik>, { tur: "varlik" }> =>
+          c.tur === "varlik" && yolDuzle(c.varlik.kokDizin) === yolDuzle(d.dizin));
+        const p = kendi?.varlik.anaSar ? programlar.get(kendi.varlik.anaSar) : undefined;
+        return p ? projeProfili(p) : undefined;
+      };
+      const musteriOgesi = (d: Extract<BinaDugumu<Varlik>, { tur: "musteri" }>, ust: PanelOge): KatOge => {
+        const profil = musteriProfili(d);
+        const tek = d.cocuklar[0]?.tur === "varlik" ? d.cocuklar[0].varlik : undefined;
+        const ad = musteriAdi(profil, d.kitaplik?.ad ?? (tek ? yuzeyAdi(tek.ad, tek.kod) : d.dizin.replace(/^.*\//, "")));
+        return { tur: "kat", bicim: "musteri", anahtar: `bina:${d.dizin}`, ad, ikon: BINA_SIMGESI.musteri,
+          aciklama: YOL_METINLERI.kumeAciklama(d.birim), ipucu: BINA_METINLERI.musteriIpucu(ad, profil?.ad, d.dizin), cocuklar: [], ust };
+      };
+      const cevir = (d: BinaDugumu<Varlik>, ust: PanelOge): PanelOge => {
+        if (d.tur === "varlik") {
+          this.binaYeri.set(d.varlik, { rol: d.rol, ...(d.rol === "proje" && kendiDeposu(d.varlik.kokDizin) ? { marka: true } : {}) });
+          this.binaUst.set(d.varlik, ust);
+          return d.varlik;
+        }
+        if (d.tur === "klasor") {
+          // Projesiz bina dışı Kitaplık: klasörleri yalnız adlarıyla sayılır, satır gezginde gösterir.
+          const mutlak = yolDuzle(d.kitaplik.dizin.startsWith("/") ? d.kitaplik.dizin : `${cati.kokDizin}/${d.kitaplik.dizin}`);
+          const n = klasorSayimi(binaKlasorAdlari(mutlak));
+          const oge: KatOge = { tur: "kat", bicim: "klasor", anahtar: `bina:${d.kitaplik.dizin}`, ad: d.kitaplik.ad,
+            ikon: n.muhurlu ? BINA_SIMGESI.disari : BINA_SIMGESI.klasor, aciklama: BINA_METINLERI.klasorSayisi(n.klasor, n.muhurlu),
+            ipucu: BINA_METINLERI.klasorIpucu(d.kitaplik.ad, d.kitaplik.ne, d.kitaplik.dizin, n.muhurlu), cocuklar: [], ust, klasor: mutlak };
+          this.binaUst.set(oge, ust);
+          return oge;
+        }
+        if (d.tur === "ofis" && d.varlik) {
+          const yer: BinaYeri = { rol: "ofis", ad: d.kitaplik.ad, birim: d.birim, cocuklar: [] };
+          this.binaYeri.set(d.varlik, yer);
+          this.binaUst.set(d.varlik, ust);
+          yer.cocuklar = d.cocuklar.map((c) => cevir(c, d.varlik!));
+          return d.varlik;
+        }
+        if (d.tur === "kat" && d.kat === 1) return this.yonetimKati(cati, d, ust, programlar);
+        const oge: KatOge = d.tur === "kat"
+          ? { tur: "kat", bicim: "kat", anahtar: `bina:${cati.kokDizin}:kat:${d.kat}`, ad: BINA_METINLERI.katAdi(d.kat),
+              aciklama: "", ipucu: BINA_METINLERI.katIpucu(BINA_METINLERI.katAdi(d.kat)), cocuklar: [], ust }
+          : d.tur === "ofis"
+            ? { tur: "kat", bicim: "ofis", anahtar: `bina:${d.kitaplik.dizin}`, ad: d.kitaplik.ad, ikon: BINA_SIMGESI.ofis,
+                aciklama: YOL_METINLERI.kumeAciklama(d.birim), ipucu: BINA_METINLERI.ofisIpucu(d.kitaplik.ad, d.kitaplik.dizin), cocuklar: [], ust }
+            : d.tur === "grup"
+              ? { tur: "kat", bicim: "grup", anahtar: `bina:${d.kitaplik.dizin}`, ad: d.kitaplik.ad,
+                  ...(d.disari ? { ikon: BINA_SIMGESI.disari } : {}),
+                  aciklama: YOL_METINLERI.kumeAciklama(d.birim), ipucu: BINA_METINLERI.grupIpucu(d.kitaplik.ad, d.kitaplik.dizin), cocuklar: [], ust }
+              : d.tur === "musteri"
+                ? musteriOgesi(d, ust)
+                : { tur: "kat", bicim: "disari", anahtar: `bina:${cati.kokDizin}:disari`, ikon: BINA_SIMGESI.disari,
+                  ad: BINA_METINLERI.binaDisiSatiri(d.kitapliklar.map((k) => k.ad)),
+                  aciklama: binaBirimi(d.cocuklar) ? YOL_METINLERI.kumeAciklama(binaBirimi(d.cocuklar)) : "",
+                  ipucu: BINA_METINLERI.binaDisiIpucu, cocuklar: [], ust };
+        this.binaUst.set(oge, ust);
+        oge.cocuklar = d.cocuklar.map((c) => cevir(c, oge));
+        return oge;
+      };
+      // Binanın proje sayısı ağacın kendisinden sayılır; yönetim katı proje çağırmadığı için sayıya girmez.
+      this.binalar.set(cati, { bina, cocuklar: agac.map((d) => cevir(d, cati)), ...binaLogosu(bina), birim: binaBirimi(agac) });
+    }
+  }
+
+  /**
+   * 🏢 PNL-A31 (Founder hükmü 2026-11-04 gecesi): yönetim katının bandı. Yönetim katı proje çağırmaz: katın
+   * altında proje satırı, roket, plan ağacı ya da sayaç yoktur; yasa grupları doğrudan bandın altında durur.
+   * Katta tek proje varsa gruplar onun yasasından türer; birden çok proje varsa her biri roketsiz bir yasa
+   * başlığı alır. Bandın açıklaması Kural, yönetmelik ve Karar toplamıdır ve banda tıklanınca ilk Anayasa
+   * açılır. Projelerin plan ağacı Ray ağacına girmez; Tren, Sinyaller ve öteki yüzeyler değişmez.
+   */
+  private yonetimKati(
+    cati: Varlik, d: Extract<BinaDugumu<Varlik>, { tur: "kat" }>, ust: PanelOge, programlar: ReadonlyMap<string, Program>,
+  ): KatOge {
+    const projeler: Varlik[] = [];
+    const topla = (ds: readonly BinaDugumu<Varlik>[]): void => {
+      for (const c of ds) {
+        if (c.tur === "varlik") projeler.push(c.varlik);
+        else if ("cocuklar" in c) topla(c.cocuklar);
+      }
+    };
+    topla(d.cocuklar);
+    const M = BINA_METINLERI;
+    const ad = M.katAdi(d.kat);
+    const bant: KatOge = { tur: "kat", bicim: "kat", anahtar: `bina:${cati.kokDizin}:kat:${d.kat}`, ad, aciklama: "",
+      ipucu: M.katIpucu(ad), cocuklar: [], ust };
+    this.binaUst.set(bant, ust);
+    const gorunumler = projeler.map((v) => this.yasaGorunumu(v, programlar));
+    let kural = 0, yonetmelik = 0, karar = 0;
+    for (const g of gorunumler) { kural += g.yasa.kuralSayisi; yonetmelik += g.yonetmelik; karar += g.yasa.karar.length; }
+    bant.aciklama = projeler.length ? M.yasaAciklamasi(kural, yonetmelik, karar) : "";
+    const ilk = gorunumler.find((g) => g.hedef)?.hedef;
+    if (ilk) { bant.hedef = ilk; bant.ipucu = `${bant.ipucu}\n${M.yasaIpucu}`; }
+    if (projeler.length === 1) {
+      bant.cocuklar = this.yasaGruplari(projeler[0]!, gorunumler[0]!, bant);
+    } else {
+      bant.cocuklar = projeler.map((v, i) => {
+        const g = gorunumler[i]!;
+        const ad = yuzeyAdi(v.ad, v.kod);
+        const bas: KatOge = { tur: "kat", bicim: "yasa", anahtar: `yasa:${v.kokDizin}`, ad, ikon: BINA_SIMGESI.yonetim,
+          aciklama: M.yasaAciklamasi(g.yasa.kuralSayisi, g.yonetmelik, g.yasa.karar.length), ipucu: `${ad}\n${M.yasaIpucu}`,
+          cocuklar: [], ust: bant, ...(g.hedef ? { hedef: g.hedef } : {}) };
+        this.binaUst.set(bas, bant);
+        bas.cocuklar = this.yasaGruplari(v, g, bas);
+        return bas;
+      });
+    }
+    return bant;
+  }
+
+  /**
+   * 🏢 PNL-A31: bir yönetim katı projesinin yasa okuması. Gruplar yalnız tiplerden türer (çekirdek
+   * `yasaOku`); proje adı, kod öneki ya da dosya adı okunmaz. Projenin dosyaları, en derin varlığı bu proje
+   * olan dosyalardır; iç içe projelerin dosyaları onlarda kalır.
+   */
+  private yasaGorunumu(v: Varlik, programlar: ReadonlyMap<string, Program>): YasaGorunumu {
+    const dosyalar: Array<readonly [string, Program]> = [];
+    for (const [yol, p] of programlar) {
+      if (kapsamIcinde(yol, v.kokDizin) && enDerinVarlik(this.varliklar, yol) === v) dosyalar.push([yol, p]);
+    }
+    const ana = v.anaSar ? programlar.get(v.anaSar) : undefined;
+    const yasa = yasaOku(dosyalar, ana ? projeKitapliklari(ana, v.anaSar!) : []);
+    const ilk = yasa.anayasa.find((d) => d.tip === "Anayasa") ?? yasa.anayasa[0];
+    return { yasa, yonetmelik: yasa.yonetmelik.filter((d) => d.tip !== "Kural").length,
+      ...(ilk ? { hedef: { dosya: ilk.dosya, satir: ilk.satir } } : {}) };
+  }
+
+  /** 🏢 PNL-A31: yasa okumasının dört grubu (Anayasa, Yönetmelikler, Kararlar, Arayüz Dili); boş grup yerini korur. */
+  private yasaGruplari(v: Varlik, g: YasaGorunumu, ust: PanelOge): KatOge[] {
+    const { yasa } = g;
+    const M = BINA_METINLERI;
+    const satir = (d: YasaDugumu, ustSatir: PanelOge): KatOge => {
+      const kural = yasaKuralSayisi(d);
+      const saran = d.tip === "Mekanizma" || d.tip === "Politika" || d.tip === "Mevzuat" || d.tip === "Anayasa";
+      const o: KatOge = { tur: "kat", bicim: "yasa", anahtar: `yasa:${d.dosya}:${d.satir}:${d.kod}`, ad: d.ad,
+        aciklama: saran ? (kural ? M.kuralSayisi(kural) : M.yasaBos) : "",
+        ipucu: M.yasaSatiriIpucu(kanonikWidgetAdi(d.tip, d.tip), d.kod, d.durum), cocuklar: [], ust: ustSatir,
+        hedef: { dosya: d.dosya, satir: d.satir }, kapali: true };
+      o.cocuklar = d.cocuklar.map((c) => satir(c, o));
+      this.binaUst.set(o, ustSatir);
+      return o;
+    };
+    /** Bütün üyeleri tek dosyadaysa grup satırı ilk üyenin tanımına gider; dağınık grup yalnız açılıp kapanır. */
+    const tekDosya = (ds: readonly YasaDugumu[]): { hedef?: { dosya: string; satir: number } } =>
+      ds.length && ds.every((d) => d.dosya === ds[0]!.dosya) ? { hedef: { dosya: ds[0]!.dosya, satir: ds[0]!.satir } } : {};
+    const grup = (anahtar: string, ad: string, ikon: string, aciklama: string, uyeler: readonly YasaDugumu[], ek: Partial<KatOge> = {}): KatOge => {
+      const k: KatOge = { tur: "kat", bicim: "yasa", anahtar: `yasa:${v.kokDizin}:${anahtar}`, ad, ikon, aciklama,
+        ipucu: M.yasaGrubuIpucu(ad), cocuklar: [], ust, kapali: true, ...tekDosya(uyeler), ...ek };
+      k.cocuklar = uyeler.map((d) => satir(d, k));
+      this.binaUst.set(k, ust);
+      return k;
+    };
+    // Tek Anayasa varsa grubun adı onun adını taşır ve Kuralları doğrudan grubun altında durur.
+    const tek = yasa.anayasa.length === 1 && yasa.anayasa[0]!.tip === "Anayasa" ? yasa.anayasa[0]! : undefined;
+    const anayasaKurali = yasa.anayasa.reduce((n, d) => n + (d.tip === "Kural" ? 1 : yasaKuralSayisi(d)), 0);
+    const anayasa = grup("anayasa", tek ? M.yasaAnayasaAdli(tek.ad) : M.yasaAnayasa, BINA_SIMGESI.anayasa,
+      yasa.anayasa.length ? M.kuralSayisi(anayasaKurali) : M.yasaBos,
+      tek ? tek.cocuklar : yasa.anayasa, tek ? { hedef: { dosya: tek.dosya, satir: tek.satir }, ipucu: M.yasaSatiriIpucu(kanonikWidgetAdi("Anayasa", "Anayasa"), tek.kod) } : {});
+    const yonetmelik = grup("yonetmelik", M.yasaYonetmelik, BINA_SIMGESI.yonetmelik, g.yonetmelik ? String(g.yonetmelik) : yasa.yonetmelik.length ? "" : M.yasaBos, yasa.yonetmelik);
+    const karar = grup("karar", M.yasaKararlar, BINA_SIMGESI.karar,
+      yasa.karar.length ? M.kararDagilimi(yasa.karar.length, yasa.kararDurumlari) : M.yasaBos, yasa.karar);
+    const arayuz = grup("arayuz", M.yasaArayuz, BINA_SIMGESI.arayuz, yasa.arayuz.length ? "" : M.yasaBos, yasa.arayuz);
+    return [anayasa, yonetmelik, karar, arayuz];
   }
 
   /**
@@ -593,6 +923,27 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   /** `oge` bir varlık düğümü mü (Ray değiştirme yalnız varlık zincirini açar). */
   varlikMi(oge: unknown): boolean { return (oge as PanelOge).tur === "varlık"; }
+
+  /** 🏢 PNL-A31: varlık zincirinin geçtiği düğüm mü (varlık ya da kat bandı)? Ray değiştirme bantların içine de iner. */
+  varlikZinciriMi(oge: unknown): boolean { const t = (oge as PanelOge).tur; return t === "varlık" || t === "kat"; }
+
+  /**
+   * 🏢 PNL-A31: yol haritasının tepesindeki bina: kat alanı taşıyan ilk kök çalışma alanının adı ve logo
+   * ilanı. Katsız çalışma alanında tanımsızdır ve tepede hiçbir şey çizilmez.
+   */
+  binaAl(): Bina | undefined {
+    const v = this.binaKoku();
+    return v ? this.binalar.get(v)!.bina : undefined;
+  }
+
+  /**
+   * 🏢 PNL-A31 (Founder onayı 2026-11-04 gecesi): binası çizilen kök çalışma alanının satırı. Ray sekmesi
+   * bu satırı ağaçtan çıkarıp tepeye taşır: şirket yalnız bir kez, logosuyla en üstte durur ve katlar
+   * doğrudan "Yol Haritası" başlığının altında açılır. Katsız çalışma alanında tanımsızdır.
+   */
+  binaKoku(): Varlik | undefined {
+    return this.kokVarliklar().find((v) => this.binalar.has(v));
+  }
 
   varlikListesi(): Varlik[] { return this.varliklar; }
 
@@ -633,7 +984,8 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   getParent(p: PanelOge): PanelOge | undefined {
     // 🪆 EKL-F7-A09: kapsanan varlık artık kökte değil — reveal üstünü bilmeli.
-    if (p.tur === "varlık") return this.varlikUst.get(p);
+    if (p.tur === "varlık") return this.binaUst.get(p) ?? this.varlikUst.get(p);
+    if (p.tur === "kat") return p.ust;   // 🏢 PNL-A31
     return undefined;   // öteki türlerde kök-seviye çözümü yeterli
   }
 
@@ -722,7 +1074,7 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     const sure = Date.now() - bas;
     if (sure >= YAVAS_GENISLETME_ESIK_MS) {
       const kim = oge === undefined ? "kök"
-        : oge.tur === "varlık" || oge.tur === "oge" ? oge.kod : oge.etiket;
+        : oge.tur === "varlık" || oge.tur === "oge" ? oge.kod : oge.tur === "kat" ? oge.anahtar : oge.etiket;
       this.olcum?.(IZ_METINLERI.yavasGenisletme(
         new Date().toTimeString().slice(0, 8), YOL_METINLERI.yavasGenisletme(sure, kim, sonuc.length),
       ));
@@ -785,8 +1137,11 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
     if (oge.tur === "varlık") {
       // 🪆 EKL-F7-A09: kapsanan varlıklar kapsayıcının altında, kendi plan
       // ögelerinden ÖNCE görünür — küme önce üyelerini, sonra kendi işini anlatır.
-      return [...this.altVarliklar(oge), ...oge.cocuklar];
+      // 🏢 PNL-A31: binası olan çalışma alanında ve kendi varlıklı ofiste üyeler bina ağacındadır.
+      const bina = this.binalar.get(oge)?.cocuklar ?? this.binaYeri.get(oge)?.cocuklar;
+      return [...(bina ?? this.altVarliklar(oge)), ...oge.cocuklar];
     }
+    if (oge.tur === "kat") return oge.cocuklar;
     return oge.cocuklar;   // Oge cocuklar: Oge[] taşır
   }
 
@@ -795,6 +1150,26 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
 
   /** 🪆 EKL-F7-A09: bir kapsayıcının doğrudan sardığı varlıklar. */
   private altVarliklar(ust: Varlik): Varlik[] { return this.varliklar.filter((v) => this.varlikUst.get(v) === ust); }
+
+  /**
+   * 🏢 PNL-A31: bina ağacındaki varlık satırının simgesi (Founder onayı 2026-11-04): şirket kökü logo ya
+   * da `organization`, ofis `briefcase`, yönetim katının projesi `law`, proje `rocket`; müşteri satırı bir
+   * varlık değildir ve `person` simgesini kendi satırında taşır. Proje ve yönetim simgesi durum rengini taşır. Tek istisna eklentinin kendi deposudur: o
+   * satır Sarmal'ın marka simgesini taşır (rengi kendi çiziminde, iki temada da aynı dosya).
+   */
+  private binaSimgesi(
+    binasi: { logo?: vscode.Uri } | undefined, yer: BinaYeri | undefined, anlam: AnlamRengi,
+  ): vscode.ThemeIcon | { light: vscode.Uri; dark: vscode.Uri } {
+    if (binasi) return binasi.logo ? { light: binasi.logo, dark: binasi.logo } : new vscode.ThemeIcon(BINA_SIMGESI.kok);
+    if (yer?.rol === "ofis") return new vscode.ThemeIcon(BINA_SIMGESI.ofis);
+    if (yer?.marka && this.eklentiKoku) {
+      const marka = vscode.Uri.joinPath(this.eklentiKoku, MARKA_SIMGESI);
+      return { light: marka, dark: marka };
+    }
+    const renk = ANLAM_TEMA_RENGI[anlam];
+    const ad = BINA_SIMGESI[yer?.rol === "yonetim" ? "yonetim" : "proje"];
+    return new vscode.ThemeIcon(ad, renk ? new vscode.ThemeColor(renk) : undefined);
+  }
 
   getTreeItem(p: PanelOge): vscode.TreeItem {
     if (p.tur === "bilgi-grup") {
@@ -817,6 +1192,24 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       };
       return eleman;
     }
+    if (p.tur === "kat") {
+      // 🏢 PNL-A31: bina ağacının plan düğümü olmayan satırı; açık doğar, içi boşsa yapraktır.
+      const eleman = new vscode.TreeItem(p.ad,
+        !p.cocuklar.length ? vscode.TreeItemCollapsibleState.None
+          : p.kapali ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.Expanded);
+      eleman.id = p.anahtar;
+      if (p.aciklama) eleman.description = p.aciklama;
+      eleman.tooltip = p.ipucu;
+      if (p.ikon) eleman.iconPath = new vscode.ThemeIcon(p.ikon);
+      eleman.contextValue = "sarmalKat";
+      // 🏢 PNL-A31: yasa satırı tanımına gider; bina dışı klasör satırı klasörü gezginde gösterir.
+      if (p.hedef) eleman.command = {
+        command: "vscode.open", title: YOL_METINLERI.ac,
+        arguments: [vscode.Uri.file(p.hedef.dosya), { selection: new vscode.Range(p.hedef.satir - 1, 0, p.hedef.satir - 1, 0) }],
+      };
+      else if (p.klasor) eleman.command = { command: "revealInExplorer", title: YOL_METINLERI.ac, arguments: [vscode.Uri.file(p.klasor)] };
+      return eleman;
+    }
     if (p.tur === "koşum") {
       // IZLE-A03 satırı — tıklama IZLE-A04 konuşma detayını açar (webview).
       const eleman = new vscode.TreeItem(p.etiket, vscode.TreeItemCollapsibleState.None);
@@ -835,20 +1228,24 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       const evre = kapsayiciEvre(p);   // YUZ-4: "bitti" tek tanımdan (cekirdek/durum.ts)
       // 🪆 EKL-F7-A09: kendi Blok'u olmasa da varlık sarıyorsa satır katlanabilir
       // kalır ve açıklama boş ray yerine kaç proje sardığını söyler (küme kimliği).
-      const sardigi = this.altVarliklar(p).length;
+      const yer = this.binaYeri.get(p);   // 🏢 PNL-A31: bina ağacındaki rolü
+      const binasi = this.binalar.get(p);
+      const sardigi = yer?.rol === "ofis" ? yer.cocuklar!.length : binasi ? binasi.birim : this.altVarliklar(p).length;
       const eleman = new vscode.TreeItem(
         // YUZ (Founder hükmü 2026-08-26): yüzey KODU göstermez — kod makinenin
         // kimliğidir ve tip zaten ikonla söylenir; geliştiricinin okuduğu tek şey
         // ADdır ve başlık düzeniyle yazılır. Kod hover ipucunda yaşamaya devam eder.
         // Adsız düğümde kod OLDUĞU GİBİ yazılır — dönüşüm ada uygulanır, koda değil
         // (Founder turu 2026-08-27 bulgu ①; tek kapı: cekirdek/baslik.yuzeyAdi).
-        yuzeyAdi(p.ad, p.kod),
-        p.cocuklar.length || sardigi ? vscode.TreeItemCollapsibleState.Expanded
+        yer?.ad ?? yuzeyAdi(p.ad, p.kod),
+        p.cocuklar.length || sardigi || binasi?.cocuklar.length ? vscode.TreeItemCollapsibleState.Expanded
                                      : vscode.TreeItemCollapsibleState.None);
       const sayac = p.cocuklar.length ? `[${p.tamam}/${p.toplam}]` : "";
-      eleman.description = sardigi
-        ? [YOL_METINLERI.kumeAciklama(sardigi), sayac].filter(Boolean).join(" · ")
-        : (sayac || YOL_METINLERI.bosRay);
+      eleman.description = yer?.rol === "ofis"
+        ? [YOL_METINLERI.kumeAciklama(yer.birim ?? 0), sayac].filter(Boolean).join(" · ")
+          : sardigi
+            ? [YOL_METINLERI.kumeAciklama(sardigi), sayac].filter(Boolean).join(" · ")
+            : (sayac || YOL_METINLERI.bosRay);
       eleman.tooltip = YOL_METINLERI.varlikIpucu(p.tip, p.kod, p.kokDizin, p.cocuklar.length, p.bloklu);
       // Şekil=SEFER (tren metaforu — A05: geometrik satır ailesinin sefer simgesi),
       // renk=durum (YUZ-4); blokaj ! rozeti köke kadar tırmanır.
@@ -857,8 +1254,9 @@ export class YolHaritasi implements vscode.TreeDataProvider<PanelOge> {
       // aktiflik ayrıca etikette 📍 ile sabit beyan edilir.
       const durumAnlami: AnlamRengi = evre === "bitti" ? "basari" : evre === "sürüyor" ? "uyari" : "notr";
       const aktifMi = p === this.aktifVarlik;
-      eleman.iconPath = satirIkonu(this.eklentiKoku, varlikSimgesi(p.tip),
-        aktifMi && this.aktifAtis ? "aktif" : durumAnlami);
+      const anlam: AnlamRengi = aktifMi && this.aktifAtis ? "aktif" : durumAnlami;
+      eleman.iconPath = binasi || yer ? this.binaSimgesi(binasi, yer, anlam)
+        : satirIkonu(this.eklentiKoku, varlikSimgesi(p.tip), anlam);
       if (aktifMi) {
         eleman.description = YOL_METINLERI.aktifAciklama(String(eleman.description ?? ""));
         eleman.tooltip = YOL_METINLERI.aktifIpucu(String(eleman.tooltip ?? ""));
@@ -1196,6 +1594,9 @@ export function yolHaritasiKaydi(context: vscode.ExtensionContext,
   context.subscriptions.push(vscode.window.registerFileDecorationProvider(new YolRenklendirici()));
   const saglayici = new YolHaritasi();
   saglayici.eklentiKoku = context.extensionUri;   // VIT-KIMLIK-A03: geometrik iconPath kökü
+  // 🏢 PNL-A31: eklentinin kendi deposu paket ilanından okunur (bina ağacında marka simgesinin tek istisnası).
+  const depo = (context.extension?.packageJSON as { repository?: { url?: unknown } | string } | undefined)?.repository;
+  saglayici.kendiDepoAdresi = typeof depo === "string" ? depo : typeof depo?.url === "string" ? depo.url : undefined;
   saglayici.olcum = olcum;
   // Founder 2026-10-21: ağaç artık kendi TreeView'ünü kurmaz; Sarmal paneli (Ray sekmesi)
   // sağlayıcıyı olduğu gibi okur ve satırları kendi webview'ünde çizer (panel.ts).

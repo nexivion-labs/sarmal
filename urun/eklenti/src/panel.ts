@@ -64,17 +64,33 @@
 
 import * as vscode from "vscode";
 import { randomBytes } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync, statSync } from "node:fs";
+import { logoCoz, logoVeriAdresi, type Bina } from "../../cekirdek/src/bina.ts";   // PNL-A31: logonun güvenlik kararı motorla aynı
+import type { BinaBasligi } from "./bina-gorunum.ts";
 import { join } from "node:path";
 import {
   type SekmeBolumu,
-  BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
+  BOLUMLER, EYLEM_KOMUTLARI, IkonDefteri, SEKMELER, bolumAnahtari, bosSekmeHtml, binaKokunuAyir, binaTepesiIcerik, grafKomutu, grafParcasi, makinistBolumuHtml, ogeKimligiBul, panelHtml, rayBolumuHtml, satirEylemleri, satirHtml,
   ayniSira, gorunurSatirlar, kacir, satirKur, satirlarHtml, satirlariUret, sekmeNormalle, sekmeSirasiNormalle, sinyallerBolumuHtml, trenBolumuHtml,
   type AgacKaynagi, type AgacOgesi, type BolumKimligi, type IkonSonucu, type SekmeKimligi, type SekmeSimgeleri,
-  type UretilenSatir, type UretimSecenekleri,
+  type UretilenSatir, type UretimSecenekleri, type PanelSatiri, BINA_TEPESI_KIMLIGI,
 } from "./panel-cekirdek.ts";
 import { BAGLAM } from "./bolum-cekirdek.ts";
 import { trenGitKonumu, trenSemaGorunumNormalle, trenSemaHtml, type TrenSemaGorunumu } from "./tren-gorunum.ts";
+
+/**
+ * 🏢 PNL-A31: binanın tepesi. Logo dosyası çekirdeğin `logoCoz` kararından geçer (kök dışı, SVG olmayan,
+ * betik ya da dış kaynak taşıyan logo gösterilmez; tanısını motor `geçersiz-logo` olarak verir) ve
+ * gösterilebilirse veri adresine çevrilir. Dosya en çok `LOGO_EN_BUYUK` bayttır, okuma bu yüzden ucuzdur.
+ */
+export function binaBasligiKur(bina: Bina | undefined): BinaBasligi | undefined {
+  if (!bina) return undefined;
+  if (!bina.logo) return { ad: bina.ad };
+  const sonuc = logoCoz(bina.kokDizin, bina.logo.yol,
+    (y) => { try { return statSync(y).isFile() ? readFileSync(y, "utf8") : undefined; } catch { return undefined; } },
+    (y) => realpathSync(y));
+  return sonuc.tur === "svg" ? { ad: bina.ad, logo: logoVeriAdresi(sonuc.svg) } : { ad: bina.ad };
+}
 
 /** Tren şirket şemasının görünüm ayarı (PNL-A11): `sarmal.trenSemaGorunum` · bu turda yalnız şeritler (öteki görünümler eklenecek). */
 export const TREN_SEMA_GORUNUM_AYARI = "trenSemaGorunum";
@@ -243,6 +259,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   private kardesVar = false;
   private sonBos = false;
   private sonGraf = "";
+  /**
+   * 🏢 PNL-A31: Ray sekmesinin tepesindeki bina başlığının son çizimi; tanımsızsa tepe yoktur. Ağaç
+   * parçası tazelendiğinde başlık da kendi parçasıyla (`bina-tepe`) güncellenir, tepe doğup kaybolursa
+   * bölümün tamamı gönderilir.
+   */
+  private sonTepe: string | undefined;
+  /** Son Ray çiziminde tepeye taşınan kök satırı. */
+  private rayTepeSatiri: UretilenSatir | undefined;
   /**
    * Webview'deki Mini Graf son gönderilen çizimden yalnız betiğin taşıdığı seçim işaretiyle mi ayrılıyor
    * (PNL-A05)? Öyleyse bir sonraki çizim aynı olsa da gönderilir. Son gönderilen çizim bunun için
@@ -671,7 +695,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
    */
   private agacUret(k: Kaynak): { satirlar: UretilenSatir[]; html: string; ikonStili: string } {
     const defter = new IkonDefteri();
-    const tum = satirlariUret(this.kaynak(k), this.secenekler(k, defter));
+    let tum = satirlariUret(this.kaynak(k), this.secenekler(k, defter));
     for (const [id, v] of [...this.harita]) if (v.kaynak === k) this.harita.delete(id);
     for (const o of [...this.ogeKimligi]) if (o[1].startsWith(`${k}/`)) this.ogeKimligi.delete(o[0]);
     for (const u of tum) { this.harita.set(u.satir.id, { kaynak: k, u }); this.ogeKimligi.set(u.oge, u.satir.id); }
@@ -690,7 +714,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
           `<div class="kademe" role="group" aria-label="${kacir(u.satir.etiket)}" style="--d:${u.satir.derinlik}" data-kapi="${kacir(u.satir.id)}">${kademe}</div>`);
       }
     }
-    if (k === "ray") this.raySinyalleriniYaz(tum);
+    if (k === "ray") {
+      this.raySinyalleriniYaz(tum);
+      // 🏢 PNL-A31: binanın kök satırı ağaçtan çıkar ve tepeye taşınır; altındakiler bir kademe yukarı çıkar.
+      const kok = this.g.yol.saglayici.binaKoku();
+      const ayrik = kok ? binaKokunuAyir(tum, kok) : { satirlar: tum, tepe: undefined };
+      tum = ayrik.satirlar;
+      this.rayTepeSatiri = ayrik.tepe;
+    }
     this.tumSatirlar[k] = tum;
     const satirlar = gorunurSatirlar(tum);
     this.sonSatirlar[k] = satirlar;
@@ -737,14 +768,14 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     const toplam = (o: { tur?: string; dugum?: Dugum }): SinyalSatiri[] => {
       const onbellek = altAgac.get(o);
       if (onbellek) return onbellek;
-      const cocuklar = o.tur === "oge" || o.tur === "varlık" ? saglayici.getChildren(o) as { tur?: string; dugum?: Dugum }[] : [];
+      const cocuklar = o.tur === "oge" || o.tur === "varlık" || o.tur === "kat" ? saglayici.getChildren(o) as { tur?: string; dugum?: Dugum }[] : [];
       const liste = [...(o.tur === "oge" && o.dugum ? dagilim.get(o.dugum) ?? [] : []), ...cocuklar.flatMap(toplam)];
       altAgac.set(o, liste);
       return liste;
     };
     for (const u of tum) {
       const o = u.oge as { tur?: string; dugum?: Dugum };
-      if (o.tur !== "oge" && o.tur !== "varlık") continue;
+      if (o.tur !== "oge" && o.tur !== "varlık" && o.tur !== "kat") continue;
       const hepsi = toplam(o);
       if (!hepsi.length) continue;
       const kendi = o.tur === "oge" && o.dugum ? dagilim.get(o.dugum) ?? [] : [];
@@ -854,8 +885,10 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const graf = this.grafAcik() ? this.g.yol.miniGraf.html() : undefined;
       this.sonGraf = graf === undefined ? "" : grafParcasi(graf);
       this.grafIsaretli = false;
+      const tepe = this.rayTepesi();
+      this.sonTepe = tepe.bina ? binaTepesiIcerik(tepe.bina, tepe.binaSinyali) : undefined;
       return {
-        html: rayBolumuHtml({ agac: a.html, bosMesaj: bos, graf, kapali: this.kapaliBolumler() }),
+        html: rayBolumuHtml({ ...tepe, agac: a.html, bosMesaj: bos, graf, kapali: this.kapaliBolumler() }),
         ikonStili: a.ikonStili,
       };
     }
@@ -864,7 +897,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
       const a = this.agacUret("tren");
       const y = this.g.trenYuvasi;
       const canli = y?.canliVar() ? { html: y.canliHtml(), ipucu: y.canliIpucu() } : undefined;
-      return { html: trenBolumuHtml(trenSemaHtml(this.g.tren.ozetAl(), trenSemaGorunumOku()), a.html, this.g.tren.bos(), this.kardesVar, canli), ikonStili: a.ikonStili };
+      const ozet = this.g.tren.ozetAl();
+      return { html: trenBolumuHtml(trenSemaHtml(ozet, trenSemaGorunumOku(), binaBasligiKur(ozet.bina)), a.html, this.g.tren.bos(), this.kardesVar, canli), ikonStili: a.ikonStili };
     }
     if (s === "sinyaller") {
       const a = this.agacUret("sinyaller");
@@ -905,8 +939,30 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
     if (k === "tren") { this.bolumGonder("tren"); return; }   // boş durum ve kardeş bağlantısı aynı bölümdedir
     if (k === "sinyaller") { this.bolumGonder("sinyaller"); return; }   // boş durum cümlesi aynı bölümdedir
     const a = this.agacUret(k);
+    if (k === "ray") {
+      // 🏢 PNL-A31: tepe doğdu ya da kayboldu → bölümün tamamı; değiştiyse yalnız tepe parçası.
+      const tepe = this.rayTepesi();
+      const yeni = tepe.bina ? binaTepesiIcerik(tepe.bina, tepe.binaSinyali) : undefined;
+      if ((yeni === undefined) !== (this.sonTepe === undefined)) { this.bolumGonder("ray"); return; }
+      if (yeni !== undefined && yeni !== this.sonTepe) {
+        this.sonTepe = yeni;
+        this.sayac.parca += 1;
+        this.yaz({ tip: "parca", sekme: "ray", kimlik: BINA_TEPESI_KIMLIGI, html: yeni, ikonStili: "", gec: this.gorulenGec });
+      }
+    }
     this.sayac.parca += 1;
     this.yaz({ tip: "parca", sekme: k, kimlik: KIMLIK_PARCASI[k], html: a.html, ikonStili: a.ikonStili, gec: this.gorulenGec });
+  }
+
+  /**
+   * 🏢 PNL-A31: Ray sekmesinin tepesindeki bina başlığı: binanın adı ve logosu, tepeye taşınan kök
+   * satırının açıklaması (etkinlik ve proje sayısı) ve alt ağacın Dur ve Dikkat toplamı.
+   */
+  private rayTepesi(): { bina?: BinaBasligi; binaSinyali?: PanelSatiri["sinyal"] } {
+    const bina = binaBasligiKur(this.g.yol.saglayici.binaAl());
+    if (!bina) return {};
+    const t = this.rayTepeSatiri?.satir;
+    return { bina: { ...bina, ...(t?.aciklama ? { aciklama: t.aciklama } : {}) }, ...(t?.sinyal ? { binaSinyali: t.sinyal } : {}) };
   }
 
   private grafCiz(): void {
@@ -927,6 +983,8 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   /** Yalnız bir satırı ilgilendiren değişim: satır yeniden kurulur ve yamalanır. */
   private satirYama(k: Kaynak, oge: unknown): void {
     if (!this.gorunum || !this.gorunum.visible) return;
+    // 🏢 PNL-A31: tepeye taşınan kök satırının ağaçta karşılığı yoktur; değişimi tepe parçasına iner.
+    if (k === "ray" && this.rayTepeSatiri && oge === this.rayTepeSatiri.oge) { this.agacTazele("ray"); return; }
     const id = this.ogeKimligi.get(oge);
     if (!id) return;
     const eski = this.harita.get(id);
@@ -972,7 +1030,7 @@ class SarmalPaneli implements vscode.WebviewViewProvider, PanelBagi, SarmalPanel
   // ── Ray değiştirme ─────────────────────────────────────────────────────────
 
   varligaGit(varlik: unknown): void {
-    const bulunan = ogeKimligiBul(this.kaynak("ray"), varlik, "ray", (o) => this.g.yol.saglayici.varlikMi(o));
+    const bulunan = ogeKimligiBul(this.kaynak("ray"), varlik, "ray", (o) => this.g.yol.saglayici.varlikZinciriMi(o));
     if (!bulunan) return;
     for (const ata of bulunan.atalar) this.acik[ata] = true;
     this.acik[bulunan.id] = true;

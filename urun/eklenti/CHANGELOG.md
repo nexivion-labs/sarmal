@@ -2,6 +2,39 @@
 
 Bu eklentinin kayda değer değişiklikleri burada tutulur.
 
+## 0.9.205 — 2026-11-05 (Yönetim katının yasası, bina dışı klasörler ve dibe yapışık Mini Graf)
+
+- **Yönetim katı proje çağırmaz.** Birinci katta proje satırı, roket, plan sayacı ya da plan ağacı görünmez; yasa grupları doğrudan kat başlığının altında durur: Anayasa ve onun kuralları, Yönetmelikler, Kararlar ve Arayüz Dili. Gruplar yalnız düğüm tiplerinden türer: Anayasa düğümü ve sardığı Kurallar; Politika ve Mevzuat düğümleri ile Kural ya da Politika saran ya da yasa taşıyan bir Kitaplıkta duran Mekanizmalar; Karar düğümleri; Tema düğümleri. Boş grup yerini korur ve boş diye yazılır. Kat başlığı kural, yönetmelik ve karar sayılarını taşır ve tıklanınca anayasa açılır; her grup ve satır tıklanınca düğümün tanımına gider. Kararlar grubu durum dağılımını sayılarla verir. Katta birden çok yönetim projesi varsa her biri roketsiz bir yasa başlığı alır. Yönetim projesi şirketin proje sayısına girmez; yönetim projelerinin planı Ray ağacında görünmez, öteki yüzeylerde değişmez.
+- **Bina dışı klasörler.** Bina dışındaki projesiz bir Kitaplık açılabilir bir satır olarak görünür ve klasör sayısını verir; arşiv ya da sonra mührü taşıyan klasörler mühürlü klasör olarak ayrıca sayılır. Klasörlerin yalnız adları okunur, mühürlü klasörlerin içine inilmez. Satıra tıklanınca klasör gezginde gösterilir; ipucu Kitaplığın kendi ilanındaki açıklamayı taşır.
+- **Mini Graf dar panelde dibe yapışıktır.** Kenar çubuğunda Yol Haritası kalan yüksekliği alır ve kendi içinde kayar; Mini Graf açıkken kendi içerik yüksekliğini alır fakat panelin yarısını geçmez, katlıyken yalnız başlık satırı kalır. Ağaç uzasa da Mini Graf başlığı görünür kalır.
+
+## 0.9.204 — 2026-11-04 (Binanın tepesi ve müşteri kademesi)
+
+- **Şirket yalnız bir kez görünür.** Kat ilan eden bir çalışma alanında Ray sekmesinin en üstünde logo, çalışma alanının adı, etkinlik ve proje sayısı ile Dur ve Dikkat toplamı tek bir başlıkta durur; "Yol Haritası" başlığı onun altına iner ve katlar doğrudan bu başlığın altında açılır. Ağaçtaki ikinci kök satırı kalkmıştır. Kat ilan etmeyen çalışma alanında ve tek proje kökünde görünüm değişmez.
+- **Müşteriler Kişi › Proje › Faz düzenindedir.** Ofisin müşteriler grubunda her müşteri kendi satırını alır ve projeleri onun altında, her projenin fazları da projenin altında durur; tek projeli müşteri de aynı biçimde görünür. Müşteri satırının adı müşterinin Profil düğümünden okunur: müşteri Kitaplığının içindeki Profil, o yoksa müşterinin kendi proje kökünün Profili kullanılır. Satırda Profildeki ilk kişinin hitabı yazar; kişi yazılmamışsa Profilin adı, Profil yoksa Kitaplığın adı yazar. Müşteri, üst satırın proje sayısında bir sayılır.
+
+## 0.9.203 — 2026-11-04 (Binanın ağacı)
+
+- **Kat, ofis ve proje kademeleri.** Kat ilan eden bir çalışma alanında yol haritası Kitaplık düzeninden türeyen bir bina ağacı çizer: kökün altında "1. Kat · Yönetim" ve "2. Kat · Ofisler" gibi kat satırları, üst katlarda her ofisin kendi satırı ve proje sayısı, ofislerin altında projeler durur. Ofisin içinde proje taşıyan bir grup Kitaplık kendi satırıyla görünür ve bu grubun çocukları ofisin müşterileri sayılır; katı olmayan kitaplıklar en altta tek bir "Bina dışı" satırında anılır. Ağaç hiçbir adı elle tutmaz; adlar ve sıra anadizinlerden okunur.
+- **Türe göre tek simge.** Şirket kökü logosunu ya da logo gösterilemiyorsa kurum simgesini, yönetim katının projeleri terazi, ofisler çanta, projeler roket, müşteriler kişi, bina dışı arşiv simgesi taşır; proje simgesi durum rengini korur. Tek istisna eklentinin kendi deposudur: git uzak adresi eklentinin depo adresiyle aynı olan proje Sarmal'ın marka simgesini taşır.
+- **Değişmeyenler.** Kat ilan etmeyen çalışma alanının, kendi kökünden açılan bir ofisin ve tek proje kökünün görünümü önceki gibidir.
+
+## 0.9.202 — 2026-11-04 (Çalışma alanının katları ve logosu)
+
+- **Bina görünümü.** Kitaplık düğümü isteğe bağlı `kat:` alanını, ÇalışmaAlanı düğümü isteğe bağlı `logo:` alanını taşıyabilir. Kat ilan eden bir çalışma alanında yol haritası projeleri kat bantlarında, katsız kitaplıkları bina dışı şeridinde gösterir ve tepede logoyu çizer; Tren sekmesindeki şirket şeması aynı katlara bölünür, en üst katta kanon kutusu, lider koltuğu ve iş akışı ajanları için yuvalar durur. Kat ilan etmeyen çalışma alanlarının görünümü değişmez.
+- **İki yeni uyarı.** `geçersiz-kat` iç içe ya da pozitif olmayan kat değerini, `geçersiz-logo` kök dışına çıkan, SVG olmayan, bulunmayan ya da betik taşıyan logoyu bildirir (PNL-A31).
+
+## 0.9.201 — 2026-11-04 (Paket tazeleme)
+
+- **Klasör mührü kurulu eklentiye ulaşır.** 0.9.200 numarası daha önce eski bir derlemeyle kurulmuş olduğu için düzenleyici yeni paketi tazelemiyordu; sürüm ilerletilerek klasör mührünü taşıyan derleme kurulabilir hâle getirildi. Kullanıcıya görünen davranış 0.9.200 notlarında anlatıldığı gibidir.
+
+## 0.9.200 — 2026-11-03 (Klasör mührü)
+
+- **Mühür artık bir klasörün adına da basılabilir.** `@ARSIV@_`, `@EGITIM@_` ve `@SONRA@_` mühürleri dosya adında olduğu gibi bir klasörün adının başında da yazılabilir ve o klasörün bütün içeriğini kapsar. Bitmiş bir projeyi ya da eski bir çalışma alanını arşive almak için içindeki dosyaları tek tek yeniden adlandırmak gerekmez; klasörün adına mühür basmak yeterlidir.
+- **Arşivdeki eski kopya canlı projeyle çakışmaz.** Arşiv ya da sonra mühürlü bir klasörün içine motor inmez; içindeki dosyalar graf, kod dizini, karne ve açık iş gündemine girmez ve içindeki Proje kökü kardeş kök sayılmaz. Canlı projeyle aynı Proje kodunu taşıyan bir arşiv kopyası bu yüzden artık "ad alanı olmadan ayrışamayan Proje kökü" uyarısı üretmez.
+- **Eğitim mühürlü klasör doğrulanır fakat sayılmaz.** Böyle bir klasörün içeriği okunur ve sözleşmelerine göre denetlenir, fakat ürün karnesine ve gündeme girmez.
+- **Mühür sessiz değildir.** Mühürlü klasör her denetimde türüyle ve adıyla listelenir, içinde ebedî kural taşıyan bir klasöre arşiv mührü basılması hata verir ve mühre benzeyen fakat geçersiz bir klasör adı uyarı alır. Panelin yol haritası ve sayımları mühürlü klasörü motorla birebir aynı biçimde dışarıda bırakır.
+
 ## 0.9.199 — 2026-10-28 (Tren şirket şeması, gerçek sayılar ve hızlı panel)
 
 - **Tren sekmesi ajanların şirket şemasını gösterir.** Ajanlar departmanlarına göre şeritlerde durur; her şeridin başında yönetici, ardından ona bağlı ajanlar gelir ve büyük ekipler tek bir özet kutusunda toplanır. Bir ajana tıklayınca profil kartı açılır: uzmanlık, yetki, bellek, sınır, uyguladığı yasa ve kime bağlı olduğu, her satır tanımına gider. Şema yalnız planda ilan edilmiş olanı çizer; ilan edilmemiş yerde "tanımlı değil" yazar ve insanlar Tren'de değil Makinist'te durur.
