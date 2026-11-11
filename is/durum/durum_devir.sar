@@ -16,9 +16,9 @@
 //   olsa bile projenin yaşı görünür kalmalıdır.
 // ═══════════════════════════════════════════════════════════════════════════
 
-DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
-            neredeyiz: 0.9.199-KURULDU-BAKIM-VE-PANEL-MAINE-BIRLESTI-CALISMAYA-ARA,
-            sıradaki: ARADAN-SONRA-PNL-A29-TREN-KUSURLARI-VE-KAPALI-CANLI-PENCERE-SONRA-PNL-A10-SONRA-A16-A17-TESLIM-ONAYI,
+DurumKaydı( kod: DRM-SARMAL, tarih: "2026-11-11", oturum: 117,
+            neredeyiz: 0.9.205-MAGAZADA-YAYINDA-ANA-DAL-ESIT-ALAN-ADI-ONAYI-MAGAZA-EKIBINDE,
+            sıradaki: FOUNDER-GOZU-EKL-F6-A01-TEMIZ-PENCEREDE-BOYAMA-SONRA-MGZ-A07-EKRAN-GORUNTULERI-SONRA-ACIK-UC-PR-11-12-13-KARARI,
             kilitler: [ STR-3-ACIK-ARAC-GIZLI-URUN, STR-3.1-SIFIR-BAGIMLILIK, STR-3.2-MODEL-BAGIMSIZLIK, MIM-1-DORT-EKSEN, MIM-1.1-CALISMA-ALANI-PROJE-KOKLERI, MIM-3-YAPI-ONCE, DIL-1-TEK-KAYNAK-TURKCE, DIL-1.5-ANLATIM-BUTUNLUGU, ORK-3.4-ONCELIK-KADEMELERI, ORK-6.1-URETICI-DENETCI-AYRILIGI, ORK-8-MEVSIM-RITUELI, YUZ-1.2-ELLE-IKIZ-YASAK, YUZ-7-YUZEY-GUNCELLIGI, YAS-4.1-TAM-YESIL, TEK-YETKILI-YASA-KANON-RAFI, TEK-DURUM-KAYNAGI-BU-DOSYA, TARIH-TAHRIF-EDILMEZ, HERSEY-SAR, MCP-ONCE, OLCULEMEYEN-KANIT-KANIT-SAYILMAZ, KANON-MADDESI-FOUNDER-KAPISIDIR, HER-PAKETLEME-SURUMU-ILERLETIR, DENETLE-CIKTISI-KIRPILMAZ, ASGARI-DOKUNUSLA-DUZENLE ],
             açıkİşler: [ PNL-A29-TREN-SEMASININ-UC-KUSURU-ARADAN-SONRA-ILK-IS,
                          PNL-A30-KILAVUZ-YENI-BICIM-ONCE-MAKINIST-ORNEGI-LIMIT-YENILENINCE,
@@ -114,6 +114,21 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         Bekleyenler: 0.9.199'un kurulması ve Founder kontrol listesi (gözünü bekleyen dokuz Mağaza ve hasat Adımı
         dahil), site deposundaki sekiz beklemeye alma değişikliğinin işlenme izni, kapalı ürünün müşteri tarafındaki
         otomasyon teklifinin cevabı ve yurt dışı pilot için tanışma mesajlarının gözden geçirilmesi.
+
+        🧭 ARA DEVİR · OTURUM 117 (2026-11-11) · SARMAL MAĞAZADA YAYINDA.
+        Eklenti 0.9.205 sürümüyle VS Code mağazasında nexivion-labs yayıncısı altında herkese açık yayımlanmıştır.
+        Founder sürüm numarasının 1.0.0 yapılmamasına, gerçek sürüm numarasıyla kararlı sürüm olarak çıkılmasına,
+        değişikliklerin önce GitHub'a işlenmesine ve işi bitmiş yan dalların silinmesine hükmetmiştir (EKL-F6-A01
+        onay kaydı); bu hüküm mağazada 1.0.0 öngören 2026-10-28 hükmünün yerini alır. Yayından önce iki sürüm ayrı
+        klonlarda ölçülmüş, 0.9.199'un eklenti süiti Node 26'da on beş sınamada düştüğü için bütün kapılardan
+        yeşil geçen 0.9.205 seçilmiştir. MGZ-A10'un dört kabul ölçütü karşılanmıştır, öncülü MGZ-A09 Founder gözünü beklediği için Adım geliştirmededir: otuz anahtar sözcük, AI kategorisi ve İngilizce
+        kurulum bölümü pakete girmiş, 1151f48 işlemesiyle PR #14 Founder'ın talimatıyla inceleme şartı atlanarak
+        ana dala birleşmiştir (on denetimin onu yeşil). Ana dal ile mağazadaki sürüm aynıdır. İçeriği ana dala
+        girmiş beş uzak dal silinmiştir; #11, #12 ve #13 içlerinde ana dala girmemiş iş taşıdığı için Founder
+        kararını beklemektedir. Yayıncı profili logo, tanım ve bağlantılarla doldurulmuş, nexivionlabs.io alan adı
+        Cloudflare'de TXT kaydıyla doğrulanmış ve onay mağaza ekibine gitmiştir. Mağazadan temiz kurulum komut
+        satırından ölçülmüştür; EKL-F6-A01 yalnız kurulan sürümün temiz pencerede bir .sar dosyasını boyadığının
+        Founder gözüyle görülmesini beklediği için geliştirmededir. Mağaza ekran görüntüleri MGZ-A07'dedir.
 
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PANELİN KODU TAMAM, 0.9.199 PAKETLENDİ.
         Panel Blokunun bütün kod Adımları kapanmıştır: onay sayacı, proje simgesi ve Ray işareti (PNL-A08, A25,
