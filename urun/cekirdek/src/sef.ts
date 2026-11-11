@@ -15,7 +15,7 @@
 //   (parantezleme: kritik kısıt baş+son) · tpl-023 (halüsinasyon-guard).
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Program, Dugum, Deger } from "./sozdizim.ts";
@@ -170,7 +170,10 @@ export interface RefDosyaÖzet {
   /** Dosya bir Ekranın referansından geldiyse o Ekranın kodu. */
   üzerinden?: string;
   mutlak?: string;
+  /** Diskte bu yolda DÜZENLİ bir dosya var. Klasör ya da yok ise false. */
   diskte?: boolean;
+  /** Yol diskte bir klasörü gösteriyor: ajana açılacak dosya gibi sunulamaz. */
+  klasör?: boolean;
   /** Çözülen mutlak yol proje kökünün dışına taşıyor (MIM-2.1 teslim sayılmaz). */
   kökDışı?: boolean;
 }
@@ -466,16 +469,26 @@ function projeKokuBul(başlangıç: string, okuma: Map<string, string[]>): strin
   }
 }
 
+/** Bir yolun diskteki türü: düzenli dosya, klasör ya da yok (ETKİLİ). Varlık
+ *  yetmez: klasörü gösteren bir `dosya:` beyanı ajana açılacak dosya değildir. */
+export type DiskTuru = "dosya" | "klasör" | "yok";
+export function diskTuru(yol: string): DiskTuru {
+  try {
+    const st = statSync(yol);
+    return st.isFile() ? "dosya" : st.isDirectory() ? "klasör" : "yok";
+  } catch { return "yok"; }
+}
+
 /** Paketteki referans dosyalarının mutlak yolunu ve disk durumunu doldurur (ETKİLİ).
  *
  *  Yol beyanı MIM-2.1 gereği PROJE köküne göredir, çağrı dizinine değil: şef çatıdan
  *  da çağrılabilir. Proje kökü, beyanı taşıyan `.sar` dosyasının üstündeki anadizinden
- *  türetilir; anadizin bulunamazsa çağrı dizini esas alınır. `varMı` sınamada
+ *  türetilir; anadizin bulunamazsa çağrı dizini esas alınır. `türü` sınamada
  *  değiştirilebilsin diye enjekte edilir. Saf çekirdek bu işlevi çağırmaz. */
 export function referansDosyalariniDogrula(
   paket: BaglamPaket,
   dizin: string,
-  varMı: (yol: string) => boolean = existsSync,
+  türü: (yol: string) => DiskTuru = diskTuru,
 ): BaglamPaket {
   if (!paket.referansDosyalari?.length) return paket;
   const kökDizin = resolve(dizin);
@@ -486,7 +499,8 @@ export function referansDosyalariniDogrula(
     const mutlak = isAbsolute(d.yol) ? d.yol : resolve(kök, d.yol);
     const göreli = relative(kök, mutlak);
     const kökDışı = göreli.startsWith("..") || isAbsolute(göreli);
-    return { ...d, mutlak, diskte: varMı(mutlak), ...(kökDışı ? { kökDışı } : {}) };
+    const tür = türü(mutlak);
+    return { ...d, mutlak, diskte: tür === "dosya", ...(tür === "klasör" ? { klasör: true } : {}), ...(kökDışı ? { kökDışı } : {}) };
   });
   return { ...paket, referansDosyalari };
 }
@@ -546,11 +560,18 @@ export function yurutucuCoz(programlar: ReadonlyMap<string, Program>, adimKod: s
   const kodlar = (n: Dugum, ad: string): string[] => { const p = alanBulGenel(n, ad); return p ? kodlariCikar(p.deger) : []; };
   // Kenarın yanlış tipe yönelmesi ORK-2.4 bekçisinin işidir; burada hedefin GERÇEK
   // tipine bakılır ki yanlış kenarla yazılmış bir zemin de doğru bölmeye düşsün.
+  // Çözülemeyen kodun gerçek tipi bilinmez; o zaman geldiği KENAR söz sahibidir:
+  // `kullanır:` Teknoloji satırına, `takım:` Takım satırına düşer.
   const takımKodları: string[] = [];
   const tekKodları: string[] = [];
-  for (const kod of [...kodlar(katmanNode, "takım"), ...kodlar(katmanNode, "kullanır")]) {
+  const kenarlar: Array<[string, "takım" | "kullanır"]> = [
+    ...kodlar(katmanNode, "takım").map((k): [string, "takım"] => [k, "takım"]),
+    ...kodlar(katmanNode, "kullanır").map((k): [string, "kullanır"] => [k, "kullanır"]),
+  ];
+  for (const [kod, kenar] of kenarlar) {
     const n = kodluDugumBul(programlar, kod);
-    if (n?.ad === "Teknoloji") { if (!tekKodları.includes(kod)) tekKodları.push(kod); }
+    const teknolojiMi = n ? n.ad === "Teknoloji" : kenar === "kullanır";
+    if (teknolojiMi) { if (!tekKodları.includes(kod)) tekKodları.push(kod); }
     else if (!takımKodları.includes(kod)) takımKodları.push(kod);
   }
   for (const kod of takımKodları) {
@@ -1305,7 +1326,9 @@ export function referansDosyalariBolmesi(dosyalar: readonly RefDosyaÖzet[], dil
         "⚠️ path not declared — write the project-root-relative path into the node's `dosya:` field (MIM-2.1); do not search for the file by guessing") + yoldan);
       continue;
     }
-    const disk = d.diskte === true ? " ✓" : d.diskte === false ? y(" ⚠️ yok", " ⚠️ missing") : "";
+    const disk = d.diskte === true ? " ✓"
+      : d.klasör ? y(" ⚠️ klasör, dosya değil — beyanı klasörün içindeki dosyaya çevir", " ⚠️ a folder, not a file — point the declaration at the file inside it")
+      : d.diskte === false ? y(" ⚠️ yok", " ⚠️ missing") : "";
     const dış = d.kökDışı ? y(" ⚠️ proje kökünün dışına taşıyor (MIM-2.1)", " ⚠️ escapes the project root (MIM-2.1)") : "";
     const görsel = gorselYoluMu(d.yol) ? y(" — görsel — işe başlamadan aç ve incele", " — image — open and inspect it before you start") : "";
     s.push(`- ${d.kod} · ${d.tür} · \`${d.yol}\`${disk}${dış}${yoldan}${görsel}`);
@@ -1489,10 +1512,16 @@ export function promptUret(paket: BaglamPaket, dil: BrifingDili = "tr"): string 
   // OSS-A12: referans dosyaları kapanışta bir kez daha anılır (parantezin kapanışı).
   const rd = paket.referansDosyalari ?? [];
   if (rd.length) {
+    // Sayılar ayrıdır: "N dosya" yolu beyan edilmiş girdilerdir; diskte olmayan ve
+    // klasör çıkan onların İÇİNDEN, yolu beyan edilmemiş ise onların DIŞINDAN sayılır.
     const yollu = rd.filter((d) => d.yol).length;
-    const eksik = rd.filter((d) => !d.yol || d.diskte === false).length;
+    const diskteYok = rd.filter((d) => d.yol && d.diskte === false && !d.klasör).length;
+    const klasör = rd.filter((d) => d.yol && d.klasör).length;
+    const beyansız = rd.filter((d) => !d.yol).length;
     s.push(y(`- Referans dosyaları: ${yollu} dosya (bölmeye bak)`, `- Reference files: ${yollu} files (see the section)`) +
-      (eksik ? y(` · ⚠️ ${eksik} eksik`, ` · ⚠️ ${eksik} missing`) : ""));
+      (diskteYok ? y(` · ⚠️ ${diskteYok} diskte yok`, ` · ⚠️ ${diskteYok} missing on disk`) : "") +
+      (klasör ? y(` · ⚠️ ${klasör} klasör`, ` · ⚠️ ${klasör} folder${klasör > 1 ? "s" : ""}`) : "") +
+      (beyansız ? y(` · ⚠️ ${beyansız} yol beyan edilmemiş`, ` · ⚠️ ${beyansız} path${beyansız > 1 ? "s" : ""} not declared`) : ""));
   }
   return s.join("\n");
 }

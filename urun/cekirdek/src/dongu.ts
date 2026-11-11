@@ -25,7 +25,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import type { BaglamPaket, DurakÖzet, KancaÖzet, KancaEvre } from "./sef.ts";
-import { promptUret, baglamMontajla, atananEtmenler, sozlesmeBul, programHaritasi } from "./sef.ts";
+import { promptUret, baglamMontajla, atananEtmenler, sozlesmeBul, programHaritasi, referansDosyalariniDogrula } from "./sef.ts";
 import type { Program } from "./sozdizim.ts";
 import type { AlanSema, Ihlal } from "./sozlesme.ts";
 import { sozlesmeSema, sozlesmeDenetle, kabulGate } from "./sozlesme.ts";
@@ -953,6 +953,21 @@ const GEREKCE_KOD = "SZL-GEREKCE";
  * önekiyle korunur (graf kaynağı öncelikli). KOD-tabanlı arama tüm programları gezer.
  * `sozlesmeDizin` yoksa/eşitse tek harita döner (mevcut davranış birebir · geriye-uyumlu).
  */
+/** OSS-A12: döngünün kurduğu her paket MCP ve komut satırı ile AYNI referans dosyası
+ *  çözümünden geçer — ajan isteminde mutlak yolu ve ✓/⚠️ disk işaretini görür. Disk
+ *  okuması `sef.ts`'teki etkili kabukta yaşar; `dongu.ts`'e `node:fs` girmez (saf çekirdek kilidi, dongu.test.ts nöbeti).
+ *  Bu işaret kanıt DEĞİLDİR, yalnız ajana dosyanın nerede olduğunu söyler. */
+export function donguPaketiKur(
+  programlar: ReadonlyMap<string, Program>,
+  dizin: string,
+  adımKod: string,
+  öncekiDurak?: DurakÖzet,
+  seçilenEtmen?: string,
+): BaglamPaket | undefined {
+  const paket = baglamMontajla(programlar, adımKod, öncekiDurak, seçilenEtmen);
+  return paket ? referansDosyalariniDogrula(paket, dizin) : undefined;
+}
+
 export function programlariTopla(dizin: string, sozlesmeDizin?: string): ReadonlyMap<string, Program> {
   const ana = programHaritasi(dizin);
   if (!sozlesmeDizin || sozlesmeDizin === dizin) return ana;
@@ -1005,7 +1020,7 @@ export interface KomutEk {
 
 export function sefDonguKomutu(dizin: string, adımKod: string, etmenÇağır: EtmenÇağır, sozlesmeDizin?: string, sonYaz?: SonYaz, ek?: KomutEk): number {
   const programlar = programlariTopla(dizin, sozlesmeDizin);
-  const paket = baglamMontajla(programlar, adımKod);
+  const paket = donguPaketiKur(programlar, dizin, adımKod);
   if (!paket) {
     console.error(`✖ '${adımKod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı). Kodu doğrula (sarmal gezin ${adımKod}) ya da doğru çalışma dizinini ver — açık Adımlar denetle çıktısının motor-susmaz listesindedir.`);
     return 4;
@@ -1024,7 +1039,7 @@ export function sefDonguKomutu(dizin: string, adımKod: string, etmenÇağır: E
   // A32: birden çok atanan Etmen → pay-başına paket (her pay kendi koni+beceri bağlamıyla).
   const etmenler = atananEtmenler(programlar, adımKod);
   const payPaketleri = etmenler.length > 1
-    ? etmenler.map((e) => baglamMontajla(programlar, adımKod, undefined, e.kod)).filter((p): p is BaglamPaket => !!p)
+    ? etmenler.map((e) => donguPaketiKur(programlar, dizin, adımKod, undefined, e.kod)).filter((p): p is BaglamPaket => !!p)
     : [];
   if (payPaketleri.length > 1) {
     console.log(`👥 çok-Etmen üretim (A32): ${etmenler.map((e) => e.kod).join(" → ")} — paylar sıralı, denetçi birleşik çıktıyı görür.`);
@@ -1089,7 +1104,7 @@ export function sefAkisKomutu(dizin: string, adımKodları: string[], etmenÇağ
   for (let i = başla; i < adımKodları.length; i++) {
     const adımKod = adımKodları[i];
     const öncekiDurak = durum.tamamlanan.length ? durum.tamamlanan[durum.tamamlanan.length - 1] : undefined;
-    const paket = baglamMontajla(programlar, adımKod, öncekiDurak);
+    const paket = donguPaketiKur(programlar, dizin, adımKod, öncekiDurak);
     if (!paket) {
       console.error(`✖ '${adımKod}' kodlu Adım bulunamadı — akış durdu (Adım ${i + 1}/${adımKodları.length}).`);
       return 4;
@@ -1237,7 +1252,7 @@ export async function sefParalelKomutu(
   kumeler.forEach((k, i) => console.log(`  seviye ${i}: ${k.join(" ∥ ")}`));
 
   const kayitlar = await paralelYurut(dag, adımKodları, async (adımKod) => {
-    const paket = baglamMontajla(programlar, adımKod);
+    const paket = donguPaketiKur(programlar, dizin, adımKod);
     // MDR-A03: üçlü tam — gözlem + gerekçe + düzeltme yolu (envanter R4 kapanışı).
     if (!paket) throw new Error(`'${adımKod}' kodlu Adım bulunamadı — verilen kod, taranan plan dosyalarındaki hiçbir Adım'la eşleşmiyor. Kodu doğrula (sarmal gezin ${adımKod}) ya da doğru çalışma dizinini ver.`);
     ek?.onBasla?.(adımKod);

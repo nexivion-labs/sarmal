@@ -983,3 +983,34 @@ test("KNT-A05: kontrol-noktası I/O'su ENJEKTE depo üzerinden — yazılır, ik
     assert.equal(çağrı, ilkÇağrı, "ikinci koşu kabul edilmiş Adımı atlamalı (kaldığı yerden — etmen çağrılmaz)");
   } finally { rmSync(d, { recursive: true, force: true }); }
 });
+
+// ── OSS-A12 · özerk döngü de referans dosyalarını mutlak yol ve disk işaretiyle verir ──
+//   MCP ve komut satırı disk denetimini koşuyordu; döngü ise paketi doğrudan promptUret'e
+//   veriyor, ajan yalnız göreli yolu ve "disk denetimi bu yüzde koşmadı" notunu görüyordu.
+
+import { mkdirSync as klasörAç } from "node:fs";
+
+test("OSS-A12: sef-dongu üretici istemi referans dosyasını mutlak yol ve ✓/⚠️ işaretiyle taşır", () => {
+  const d = mkdtempSync(yolBirleştir(tmpdir(), "sarmal-dongu-rd-"));
+  try {
+    klasörAç(yolBirleştir(d, "referans"), { recursive: true });
+    fikstürYaz(yolBirleştir(d, "ornek_anadizin.sar"), `Proje( kod: PRJ-DRD, ne: "uydurma proje" )\n`);
+    fikstürYaz(yolBirleştir(d, "referans", "ornek.png"), "x");
+    const sar = SAR
+      .replace("Blok( kod: BLK-T ){", `Mockup( kod: MOK-DRD-VAR, dosya: "referans/ornek.png", ne: "örnek görsel" )
+  Mockup( kod: MOK-DRD-YOK, dosya: "referans/eksik.png", ne: "diskte yok" )
+  Blok( kod: BLK-T ){`)
+      .replace(`görev: "bir şey üret", durum: beklemede`, `görev: "bir şey üret", referans: [ MOK-DRD-VAR, MOK-DRD-YOK ], durum: beklemede`);
+    fikstürYaz(yolBirleştir(d, "t.sar"), sar);
+    const istemler: string[] = [];
+    const etmen: EtmenÇağır = (ç) => { if (ç.rol === "üretici") istemler.push(ç.prompt); return temizEtmen(ç); };
+    sefAkisKomutu(d, ["ADM-T"], etmen);
+    assert.ok(istemler.length > 0, "üretici çağrıldı");
+    const istem = istemler[0];
+    assert.match(istem, /## 📁 Referans dosyaları/u);
+    assert.match(istem, /`referans\/ornek\.png` ✓/u, "diskteki dosya ✓ alır");
+    assert.match(istem, /`referans\/eksik\.png` ⚠️ yok/u, "diskte olmayan ⚠️ alır");
+    assert.ok(istem.includes("`" + yolBirleştir(d, "referans", "ornek.png") + "`"), "mutlak yol basılır");
+    assert.doesNotMatch(istem, /Disk denetimi bu yüzde koşmadı/u, "döngü yolunda disk denetimi koşar");
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
