@@ -3605,10 +3605,10 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         /// dosyasını göstermiş, görselin kendi yolunu hiç basmamış ve Mockup açıklamasını referans
         /// bütçesine sığdırmak için kırpmıştır; proje bu açığı yolları görev metnine elle yazarak
         /// kapatmak zorunda kalmıştır.
-        Adım( kod: OSS-A12, ad: "Referans Dosyalarının ve Yürütücü Yığının İstemde Yol ile Basılması", durum: geliştirmede, öncelik: p1, bağımlı: [],
+        Adım( kod: OSS-A12, ad: "Referans Dosyalarının ve Yürütücü Yığının İstemde Yol ile Basılması", durum: tamamlandı, öncelik: p1, bağımlı: [],
           referans: [ MIM-2.1, MIM-1.4, ORK-2.1, MEK-SEF, SZL-BAGLAM-PAKET, OSS-A07, OZK-17 ],
           üretir: [ KOD-SEF, KOD-SNM-SEF, KOD-MCP, KOD-DONGU, KOD-SNM-DONGU ],
-          koşu: "2026-11-12 · Bağımsız denetimin altı bulgusu sef-referans-dosyalari dalında kapatıldı: özerk döngü de paketini MCP ve komut satırıyla aynı disk denetiminden geçirir, klasörü gösteren beyan ayrı uyarı alır, çözülemeyen yığın kodu geldiği kenara göre sınıflanır ve kapanış özeti eksikleri türüne göre ayrı sayar. Dört yeni sınama dört mutasyonla kanıtlandı ve kanıt brifingleri depo dışında yeniden üretildi. Adım OZK-17 gereği yerel ana dala birleştirmeyi bekler; birleştirme ve gönderim Founder sözüyle yapılır.",
+          koşu: "2026-11-12 · Adım OZK-17 gereği yerel ana dala yeni işleme üretilmeden ileri sarma ile alınmış ve yerel main ile canlı durum/oturum-117 dalı 1be9314 işlemesine gelmiştir. Ana dalın ucunda çekirdek süiti 1827/1827 sınamada geçmiş ve tip denetimi temiz çıkmıştır. Uzak depoya gönderim bu kapanışın kapsamı dışındadır ve ayrı bir Founder sözünü bekler.",
           ne: "📁 Şef isteminin, Adımın referans verdiği Mockup ve öteki dosya taşıyan düğümlerin dosya yollarını kırpmadan, diskte bulunup bulunmadığını işaretleyerek ve görsel dosyaları ayrıca belirterek basması; aynı istemin Adımın Katmanına bağlı Takımı ve o Takımın Teknolojilerini de göstermesi." ) {
           görev: [
             "Adımın referans alanındaki ve bu alanda ya da bağımlılık ve üretim kenarlarında yer alan Ekranların kendi referans alanlarındaki her düğüm için, düğüm bir dosya beyanı taşıyorsa beyanın proje köküne göreli yolunu, mutlak yolunu ve diskte bulunup bulunmadığını çöz; proje kökü beyanı taşıyan `.sar` dosyasının üstündeki anadizinden türetilir.",
