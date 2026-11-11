@@ -9,11 +9,34 @@
   "keywords": [
     "sarmal",
     "sar",
-    "türkçe",
-    "declarative",
-    "widget tree",
+    "ai agents",
+    "ai",
+    "llm",
+    "mcp",
+    "model context protocol",
+    "agentic",
+    "guardrails",
+    "planning",
+    "project plan",
+    "roadmap",
+    "architecture",
     "drift",
-    "ai"
+    "drift detection",
+    "linter",
+    "diagnostics",
+    "declarative",
+    "dsl",
+    "specification",
+    "spec driven",
+    "intent",
+    "governance",
+    "folder structure",
+    "knowledge graph",
+    "dependency graph",
+    "workflow",
+    "documentation",
+    "turkish",
+    "türkçe"
   ],
   "repository": {
     "type": "git",
@@ -27,7 +50,8 @@
   },
   "categories": [
     "Programming Languages",
-    "Linters"
+    "Linters",
+    "AI"
   ],
   "main": "./dist/eklenti.js",
   "capabilities": {
