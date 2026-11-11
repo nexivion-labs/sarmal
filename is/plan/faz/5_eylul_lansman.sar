@@ -4506,7 +4506,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         //   aynı gece mührün klasör adına da basılabilmesine hükmetmiştir; hüküm tahmin
         //   değil açık beyandır ve MIM-3.4'ün klasör adından tahmin yürüten eski kuralı
         //   kaldırma gerekçesini korur.
-        Adım( kod: KPS-MHR-A02, ad: "Klasör Mührünün Kanona ve Motora İnmesi", durum: geliştirmede, öncelik: p0,
+        Adım( kod: KPS-MHR-A02, ad: "Klasör Mührünün Kanona ve Motora İnmesi", durum: tamamlandı, öncelik: p0,
           bağımlı: [ KPS-MHR-A01 ], referans: [ MIM-3, MIM-3.4, OGR-3 ],
           üretir: [ KOD-KIMLIK, KOD-DENETIM, KOD-SNM-KLASOR-MUHRU, KOD-SNM-EKL-KLASOR-MUHRU ],
           onay: "onaylandı — 2026-11-03 · FOUNDER: kontrolcünün maket ölçümüyle sunduğu klasör mührü önerisi kabul edilmiş ve işin aynı gece başlatılmasına hükmedilmiştir.",
@@ -4528,6 +4528,7 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
           ]
           sınır: "Bu Adım mekanizmayı Sarmal'ın kendi deposunda kurar; herhangi bir kullanıcı çalışma alanındaki klasörü yeniden adlandırmak bu Adımın işi değildir. Klasör adından tahmin yürüten hiçbir kural geri getirilmez; muafiyet yalnız açık mühürle doğar. Mevcut dosya mühürlerinin davranışı değişmez."
           dokunulmaz: [ "MIM-3.4'ün dosya mührüne ilişkin mevcut hükmü", "Mevcut .sar dosyalarının adları", "Öğreti kitaplığındaki ders raflarının klasör yeriyle tanınması" ]
+          koşu: Koşum( kod: KSM-KPS-MHR-A02, tarih: 2026-11-11, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "Klasör mührü 419d6a0 ile çekirdeğe ve eklentiye inmiştir ve MIM-3.4 klasör hükmünü taşımaktadır. klasor-muhru.test.ts 7/7 ve klasor-muhru-esitligi.test.ts 2/2 geçmektedir; bağımsız iki mutasyon (çözücünün mührü görmemesi ve arşiv klasörünün okunması) yedi sınamanın beşini kırmızıya çevirmiştir. Çekirdek 1816/1816, eklenti 1201/1201 (Node 26.13), depo denetimi 0 hata; kalan iki uyarı EKL-F6-A01 ile MGZ-A10'un açık öncüllerinden gelir ve bu Adımla ilgisizdir.", ne: "2026-11-11 kanıt taramasında bütün kabul ölçütleri bağımsız olarak yeniden ölçülmüş ve Adım kapatılmıştır; kanıt klonda ccbf667 üzerinde koşulan süitlerdendir." )
         }
       }
 
@@ -6047,7 +6048,7 @@ sessizce körleşmez.
           sınır: "Tanılar .sar düğümü olarak yeniden yazılmaz; sicil tek kaynak kalır"
         }
 
-        Adım( kod: HST-MTR-A04, ad: "Yürütücü İzinin Koşum Yüzüne Düşmesi", durum: geliştirmede, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, yürütücü izinin durum güncelleme aracında varsayılan açık, şef aracında isteğe bağlı olmasına hükmetmiştir; gerekçe, durum güncelleme zaten yazan bir araç olduğu için beyanının değişmemesi ve şefin salt okunur beyanının bozulmamasıdır. Varsayılan açılış iki önkoşula bağlıdır: doğuş şablonunun iz klasörünü yok sayması, ki HST-MTR-A14 ile kapanmıştır, ve izlere rotasyon gelmesi; o zamana kadar iz kapalı kalır.", öncelik: p1, üretir: [ KOD-YOLHARITA, KOD-MCP, KOD-KOPRU-IZ, KOD-YUZEY-METINLERI, KOD-SNM-YURUTUCU-IZI ], bağımlı: [],
+        Adım( kod: HST-MTR-A04, ad: "Yürütücü İzinin Koşum Yüzüne Düşmesi", durum: tamamlandı, onay: "onaylandı — 2026-10-10 · ŞERH 2026-10-10 · FOUNDER (karar sayfası): Founder, yürütücü izinin durum güncelleme aracında varsayılan açık, şef aracında isteğe bağlı olmasına hükmetmiştir; gerekçe, durum güncelleme zaten yazan bir araç olduğu için beyanının değişmemesi ve şefin salt okunur beyanının bozulmamasıdır. Varsayılan açılış iki önkoşula bağlıdır: doğuş şablonunun iz klasörünü yok sayması, ki HST-MTR-A14 ile kapanmıştır, ve izlere rotasyon gelmesi; o zamana kadar iz kapalı kalır.", öncelik: p1, üretir: [ KOD-YOLHARITA, KOD-MCP, KOD-KOPRU-IZ, KOD-YUZEY-METINLERI, KOD-SNM-YURUTUCU-IZI ], bağımlı: [],
           referans: [ HTR-YURUTUCU-IZI-KOSUM-YUZUNE-DUSMUYOR ],
           ne: "👣 İşi dış bir yürütücü yaptığında da Adımın altında koşum izi görünsün" ) {
           görev: "Yol haritası paneli koşum izi klasörünü dinlemektedir, fakat iz yalnız motorun kendi döngüsü bir model çağırdığında yazılmaktadır. MCP sunucusunun sef ve durum-guncelle çağrıları gibi yürütücü temas noktalarında hafif bir iz kaydı yazılır; böylece Claude Code gibi bir yürütücünün işi de panelde Adımın altında görünür."
@@ -6240,7 +6241,7 @@ sessizce körleşmez.
             ne:    "Doğan bir proje motorun iz klasörünü artık yok sayıyor: temiz bir makinede ham istem taşıyan iz dosyaları git durumunda görünmüyor ve var olan bir yok sayma dosyası genişletilirken kullanıcının satırları korunuyor. Doğuş aracının iki dilli tarifi ile kaynaktaki aşırı iddialı nöbet yorumu ölçülen gerçeğe çekildi. Bu düzeltmeden önce doğmuş köklerin habersiz kalması HST-MTR-A16'ya, yok sayma uç durumları ile iz klasörü adının beş yazıcıda ayrı yazılması iki hatırlatıcıya bağlandı." )
         }
 
-        Adım( kod: HST-MTR-A15, ad: "Gezinmede Adlı Kuralın Tipi", durum: geliştirmede, öncelik: p2, üretir: [ KOD-KIMLIK ], bağımlı: [],
+        Adım( kod: HST-MTR-A15, ad: "Gezinmede Adlı Kuralın Tipi", durum: tamamlandı, öncelik: p2, üretir: [ KOD-KIMLIK ], bağımlı: [],
           referans: [ HST-YUZ-A06 ],
           ne: "🏷️ Gezinme aracı adlı bir Kuralın tanımında Kuralın adını değil tipini göstersin" ) {
           görev: "HST-YUZ-A06'nın bağımsız incelemesi (2026-10-10) eklentideki ipucu kartında onarılan kusurun motorun gezinme yüzünde de yaşadığını ölçmüştür: adlı bir Kuralın tanımı sorulduğunda araç tip yerine Kuralın adını basar; örneğin KRL-SAR-ARAC için araçÖnce, DIL-1.5 için anlatımBütünlüğü yazılır ve bağlam kartındaki adreslerde de ad geçer. Kaynak, kimlik dizinindeki dosya tarayıcısının tanımın tip alanına düğümün adını yazmasıdır. Bu alanın başka tüketicileri de olduğu için önce tüketiciler sayılır, ardından adlı bir Kuralla kırmızı sınama yazılır ve tip düğümün türünden okunur."
@@ -6250,9 +6251,10 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kimlik dizininin öteki alanları ve atıf listeleri değişmez"
+          koşu: Koşum( kod: KSM-HST-MTR-A15, tarih: 2026-11-11, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "a5c3611: gezin adlı bir Kuralın tipini düğümün türünden okur. kimlik.test.ts içindeki HST-MTR-A15 sınaması önce kırmızıydı, bugün yeşildir; 1948 adsız rapor bayt bayt aynıdır ve dört mutasyonun dördü yakalanmıştır. Çekirdek 1816/1816.", ne: "2026-11-11 kanıt taramasında bütün kabul ölçütleri bağımsız olarak yeniden ölçülmüş ve Adım kapatılmıştır; kanıt klonda ccbf667 üzerinde koşulan süitlerdendir." )
         }
 
-        Adım( kod: HST-MTR-A16, ad: "Kök Kapısında Eksik İz Satırı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-YONERGE-IKIZI ], bağımlı: [],
+        Adım( kod: HST-MTR-A16, ad: "Kök Kapısında Eksik İz Satırı", durum: tamamlandı, öncelik: p2, üretir: [ KOD-YONERGE-IKIZI ], bağımlı: [],
           referans: [ HST-MTR-A14 ],
           ne: "🚪 Doğuş onarımından önce doğmuş bir kök, yok sayma dosyasında iz klasörü satırı eksikse bunu kök kapısından öğrensin" ) {
           görev: "HST-MTR-A14'ün bağımsız incelemesi (2026-10-10) doğuş şablonuna iz klasörü satırı eklendikten sonra da bu düzeltmeden önce doğmuş köklerin habersiz kaldığını ölçmüştür: böyle bir kökte yönerge ikizi ölçümü tam der ve depo denetimi sessiz kalır, oysa git durumu iz klasörünü izlenmeyen olarak gösterir. Motorun ham istem taşıyan izi aynı klasöre yazdığı için bu bir gizlilik açığıdır ve yürütücü izi varsayılan açılacaksa önkoşuldur. Kök kapısı satırın eksikliğini bildirir ve onarım yolunu söyler; önce satırı eksik bir kök fikstürüyle kırmızı sınama yazılır."
@@ -6262,9 +6264,10 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Kapı kullanıcının yok sayma dosyasına kendiliğinden yazmaz; yalnız bildirir"
+          koşu: Koşum( kod: KSM-HST-MTR-A16, tarih: 2026-11-11, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "eae2818: kök kapısı .sarmal/ satırı eksik bir köke iz-klasoru-eksik bulgusunu ve onarım önerisini basar, dosyaya yazmaz. yonerge-ikizi.test.ts içindeki iki HST-MTR-A16 sınaması geçmektedir ve birincisi önce kırmızıydı; beş mutasyonun beşi yakalanmıştır.", ne: "2026-11-11 kanıt taramasında bütün kabul ölçütleri bağımsız olarak yeniden ölçülmüş ve Adım kapatılmıştır; kanıt klonda ccbf667 üzerinde koşulan süitlerdendir." )
         }
 
-        Adım( kod: HST-MTR-A17, ad: "Araç Açıklamalarında Biçim Kalıbı", durum: geliştirmede, öncelik: p2, üretir: [ KOD-MCP-METINLERI ], bağımlı: [],
+        Adım( kod: HST-MTR-A17, ad: "Araç Açıklamalarında Biçim Kalıbı", durum: tamamlandı, öncelik: p2, üretir: [ KOD-MCP-METINLERI ], bağımlı: [],
           referans: [ HTR-ARAC-ACIKLAMALARINDA-OLU-ORNEK-KOD ],
           ne: "🧩 Araç açıklamaları hiçbir yerde tanımlı olmayan bir kodu örnek göstermesin" ) {
           görev: "İki MCP araç açıklamasında ve bir hata cümlesinde örnek olarak verilen Adım kodu hiçbir yerde tanımlı değildir; bu metinler kullanıcı projelerinde de okunur ve ajan örneği gerçek sanıp aramaya çıkar. Founder'ın 2026-10-10 hükmüyle örnekler somut bir kod anmaz, biçimi anlatan bir kalıp gösterir; kalıp da kod adları gibi yalnız ASCII harflerle yazılır. Önce araç açıklamalarında ve hata cümlelerinde örnek olarak geçen bütün kodlar sayılır ve her birinin tanımlı olup olmadığı ölçülür; somut örnekler iki dilde kalıba çevrilir ve örnek alanlarında somut bir kod bulunmadığını ölçen bir nöbet yazılır."
@@ -6274,6 +6277,7 @@ sessizce körleşmez.
             "denetim 0 hata, süitler yeşil"
           ]
           sınır: "Araçların adı, şeması ve davranışı değişmez; yalnız örnek metinleri değişir"
+          koşu: Koşum( kod: KSM-HST-MTR-A17, tarih: 2026-11-11, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "5dccae1: araç metinlerindeki örnek kodlar <ONEK>-<KONU>-A<NN> kalıbına çevrilmiştir. mcp-metin-ceviri-kapsama.test.ts içindeki iki HST-MTR-A17 nöbeti geçmektedir ve ikisi de önce kırmızıydı; türetilmiş yüzün mührü tazelenmiş, beş mutasyonun beşi yakalanmıştır.", ne: "2026-11-11 kanıt taramasında bütün kabul ölçütleri bağımsız olarak yeniden ölçülmüş ve Adım kapatılmıştır; kanıt klonda ccbf667 üzerinde koşulan süitlerdendir." )
         }
       }
     }
@@ -6554,7 +6558,7 @@ sessizce körleşmez.
           koşu: Koşum( kod: KSM-MGZ-A10, tarih: 2026-11-11, mühür: COMPLETED, model: "claude-opus-5-5", kanıt: "1151f48 · eklenti 1201/1201 ve çekirdek 1816/1816 (Node 24 ve 26), tip denetimi ve eslint temiz, yasak sözcük taraması 0 eşleşme · paket bildiriminde otuz anahtar sözcük ve Programming Languages, Linters, AI kategorileri · mağazaya yüklenen 0.9.205 paketinde ad, kategori ve İngilizce benioku okundu · PR #14 ana dala birleşti", ne: "Otuz anahtar sözcük, Founder'ın 2026-10-10 karar sayfasında işaretlediği listedir: sarmal, sar, ai agents, ai, llm, mcp, model context protocol, agentic, guardrails, planning, project plan, roadmap, architecture, drift, drift detection, linter, diagnostics, declarative, dsl, specification, spec driven, intent, governance, folder structure, knowledge graph, dependency graph, workflow, documentation, turkish, türkçe. Liste o güne kadar yalnız oturum kaydında duruyordu; bu koşuyla plana yazılmıştır. Mağaza kategorilerine AI eklenmiş, İngilizce beniokuya kurulum ve MCP bağlama bölümü girmiş, vitrin nöbeti tam listeyi, kategoriyi ve beniokunun temel bölümlerini ölçecek biçimde sıkılaştırılmıştır. Dört kabul ölçütü karşılanmıştır; Adım yalnız öncülü MGZ-A09 Founder'ın İngilizce pencereye bakışıyla kapanana kadar geliştirmede kalır." )
         }
 
-        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: geliştirmede, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI, KOD-SNM-MCP-INGILIZCE-KIP ], bağımlı: [],
+        Adım( kod: MGZ-A11, ad: "MCP Yüzünün İngilizce Kipi", durum: tamamlandı, öncelik: p1, üretir: [ KOD-MCP, KOD-MCP-METINLERI, KOD-SNM-MCP-INGILIZCE-KIP ], bağımlı: [],
           referans: [ HTR-MCP-DIL-AYRISMASI, MGZ-A09 ],
           ne: "🌐 İngilizce kipte MCP araçları İngilizce konuşsun ve ajana yalnız dosyada gerçekten bulunan adları öğretsin; böylece İngilizce kipteki bir ajan geçersiz .sar yazmasın" ) {
           görev: "Founder 2026-10-16 tarihinde MCP yüzündeki dil ayrışmasının mağaza yüklemesinden önce kapanmasına hükmetmiştir; ilke MGZ-A09'daki İngilizce yüz ilkesinin aynısıdır. Önce on dokuz aracın İngilizce ve Türkçe kipteki çıktısı yeniden ölçülür ve Türkçe kalan metinler sayılır. En ağır kusur önce kapanır: öğretim aracı, başla rehberi, sunucu talimatı ve doğuş aracının açıklaması dosyada bulunmayan ad karşılıkları (Step, Phase, dependsOn) öğretmeyi bırakır ve dosyadaki gerçek Türkçe adları anar. Ardından denetim araçları İngilizce kipte çekirdeğin var olan İngilizce tanı metinlerini kullanır, araçların başlık satırları ve şef brifinginin şablonu İngilizceye çevrilir ve iki dil için bir nöbet yazılır. HTR-MCP-CIKTILARI-INGILIZCE-DEGIL kaydı aynı kusurun ikizidir ve bu Adımla birlikte kapanır."
