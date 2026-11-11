@@ -1030,3 +1030,50 @@ test("OSS-A12 · İngilizce hane yeni bölmeleri İngilizce başlıklarla basar"
   assert.match(prompt, /MOK-RD-SAYFA-1[^\n]*image — open and inspect it before you start/u);
   assert.doesNotMatch(prompt, /## 📁 Referans dosyaları/u);
 });
+
+// ── OSS-A12 denetim bulguları: kenara göre sınıflama · klasör · ayrı sayılar ──
+
+test("OSS-A12 · çözülemeyen kod GELDİĞİ KENARA göre sınıflanır: kullanır → Teknoloji, takım → Takım", () => {
+  const sar = String.raw`
+Katman( kod: KAT-HY, ad: "Hayalet", takım: TAKIM-ORN-HAYALET, kullanır: TEK-ORN-HAYALET ){
+  Adım( kod: ADM-HY, görev: "hayalet zemin" )
+}`;
+  const paket = baglamMontajla(new Map([["h.sar", ayristir(belirtecle(sar))]]), "ADM-HY")!;
+  assert.deepEqual(paket.yürütücü?.takımlar.map((t) => [t.kod, t.çözüldü]), [["TAKIM-ORN-HAYALET", false]]);
+  assert.deepEqual(paket.yürütücü?.teknolojiler.map((t) => [t.kod, t.çözüldü]), [["TEK-ORN-HAYALET", false]]);
+  const prompt = promptUret(paket);
+  assert.match(prompt, /Teknoloji \(Katmanın kullanır bağı\): TEK-ORN-HAYALET \(⚠️ çözülmedi\)/u);
+  assert.match(prompt, /- Takım: TAKIM-ORN-HAYALET \(⚠️ çözülmedi\)/u);
+  assert.doesNotMatch(prompt, /Takım: TEK-ORN-HAYALET/u, "kullanır kenarından gelen kod Takım sayılmaz");
+});
+
+test("OSS-A12 · klasörü gösteren dosya: beyanı ✓ almaz, '⚠️ klasör, dosya değil' der; özet sayıları ayrıdır", () => {
+  const dizin = mkdtempSync(join(tmpdir(), "sarmal-sef-rd-kl-"));
+  try {
+    mkdirSync(join(dizin, "referans", "klasor"), { recursive: true });
+    writeFileSync(join(dizin, "ornek_anadizin.sar"), `Proje( kod: PRJ-RDK, ne: "uydurma proje" )\n`, "utf8");
+    writeFileSync(join(dizin, "referans", "var.png"), "x", "utf8");
+    writeFileSync(join(dizin, "plan.sar"), String.raw`
+Mockup( kod: MOK-K-VAR, dosya: "referans/var.png", ne: "diskte olan" )
+Mockup( kod: MOK-K-YOK1, dosya: "referans/yok-1.png", ne: "diskte yok" )
+Mockup( kod: MOK-K-YOK2, dosya: "referans/yok-2.png", ne: "diskte yok" )
+Mockup( kod: MOK-K-KLASOR, dosya: "referans/klasor", ne: "klasör" )
+Mockup( kod: MOK-K-BEYANSIZ, ne: "yolu yok" )
+Katman( kod: KAT-K, kullanır: TEK-K ){
+  Adım( kod: ADM-K, görev: "karşılaştır", referans: [ MOK-K-VAR, MOK-K-YOK1, MOK-K-YOK2, MOK-K-KLASOR, MOK-K-BEYANSIZ ] )
+}`, "utf8");
+    const paket = referansDosyalariniDogrula(baglamMontajla(programHaritasi(dizin), "ADM-K")!, dizin);
+    const bul = (kod: string) => paket.referansDosyalari!.find((d) => d.kod === kod)!;
+    assert.equal(bul("MOK-K-KLASOR").diskte, false, "klasör düzenli dosya sayılmaz");
+    assert.equal(bul("MOK-K-KLASOR").klasör, true);
+    assert.equal(bul("MOK-K-VAR").diskte, true);
+    const prompt = promptUret(paket);
+    assert.match(prompt, /- MOK-K-KLASOR · Mockup · `referans\/klasor` ⚠️ klasör, dosya değil/u);
+    assert.doesNotMatch(prompt, /`referans\/klasor` ✓/u);
+    assert.match(prompt, /- Referans dosyaları: 4 dosya \(bölmeye bak\) · ⚠️ 2 diskte yok · ⚠️ 1 klasör · ⚠️ 1 yol beyan edilmemiş$/mu);
+    const en = promptUret(paket, "en");
+    assert.match(en, /- Reference files: 4 files \(see the section\) · ⚠️ 2 missing on disk · ⚠️ 1 folder · ⚠️ 1 path not declared$/mu);
+  } finally {
+    rmSync(dizin, { recursive: true, force: true });
+  }
+});

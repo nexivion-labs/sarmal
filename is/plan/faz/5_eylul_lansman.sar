@@ -3606,22 +3606,23 @@ mutabık kalınarak yeni depo yerleşimiyle hizalanır.
         /// bütçesine sığdırmak için kırpmıştır; proje bu açığı yolları görev metnine elle yazarak
         /// kapatmak zorunda kalmıştır.
         Adım( kod: OSS-A12, ad: "Referans Dosyalarının ve Yürütücü Yığının İstemde Yol ile Basılması", durum: geliştirmede, öncelik: p1, bağımlı: [],
-          referans: [ MIM-2.1, MIM-1.4, ORK-2.1, MEK-SEF, SZL-BAGLAM-PAKET, OSS-A07 ],
-          üretir: [ KOD-SEF, KOD-SNM-SEF, KOD-MCP ],
-          koşu: "2026-11-12 · Üretim sef-referans-dosyalari dalında tamamlandı: şef istemi Görevden hemen sonra kırpılmayan Referans Dosyaları bölmesini ve Yürütücü Takım ve Yığın bölmesini basar, MCP aracı ile komut satırı disk denetimini aynı işlevden alır. Sekiz yeni sınama dört mutasyonla kanıtlandı; çekirdek süiti 1824/1824 ve eklenti süiti 1195 geçişle sıfır hata verdi, tip denetimi ve depo denetimi sıfır hata verdi. Gerçek bir müşteri projesinde on üç görsel referanslı bir Adımın brifingi on üç yolun hepsini diskte doğrulanmış olarak gösterdi; kanıt depo dışında tutulur ve Adım Founder onayını ile birleştirmeyi bekler.",
+          referans: [ MIM-2.1, MIM-1.4, ORK-2.1, MEK-SEF, SZL-BAGLAM-PAKET, OSS-A07, OZK-17 ],
+          üretir: [ KOD-SEF, KOD-SNM-SEF, KOD-MCP, KOD-DONGU, KOD-SNM-DONGU ],
+          koşu: "2026-11-12 · Bağımsız denetimin altı bulgusu sef-referans-dosyalari dalında kapatıldı: özerk döngü de paketini MCP ve komut satırıyla aynı disk denetiminden geçirir, klasörü gösteren beyan ayrı uyarı alır, çözülemeyen yığın kodu geldiği kenara göre sınıflanır ve kapanış özeti eksikleri türüne göre ayrı sayar. Dört yeni sınama dört mutasyonla kanıtlandı ve kanıt brifingleri depo dışında yeniden üretildi. Adım OZK-17 gereği yerel ana dala birleştirmeyi bekler; birleştirme ve gönderim Founder sözüyle yapılır.",
           ne: "📁 Şef isteminin, Adımın referans verdiği Mockup ve öteki dosya taşıyan düğümlerin dosya yollarını kırpmadan, diskte bulunup bulunmadığını işaretleyerek ve görsel dosyaları ayrıca belirterek basması; aynı istemin Adımın Katmanına bağlı Takımı ve o Takımın Teknolojilerini de göstermesi." ) {
           görev: [
             "Adımın referans alanındaki ve bu alanda ya da bağımlılık ve üretim kenarlarında yer alan Ekranların kendi referans alanlarındaki her düğüm için, düğüm bir dosya beyanı taşıyorsa beyanın proje köküne göreli yolunu, mutlak yolunu ve diskte bulunup bulunmadığını çöz; proje kökü beyanı taşıyan `.sar` dosyasının üstündeki anadizinden türetilir.",
             "İsteme Görev bölmesinden hemen sonra Referans Dosyaları bölmesini ekle; her satır kod, tür ve yolu taşısın, görsel uzantılı dosyalar işe başlamadan açılıp incelenmesi gereken görseller olarak işaretlensin ve bu bölmenin yolları hiçbir bütçe koşulunda kırpılmasın.",
             "Dosyası zorunlu olan bir referans türü dosya beyanı taşımıyorsa Üretir bölmesindeki eksik beyan uyarısının eşini bas; kritik kısıt özetine referans dosyalarının sayısını ekle.",
             "Adımın bağlı olduğu Katmanın takım bağını, o Takımın Teknolojilerini ve Katmanın doğrudan kullandığı Teknolojileri adlarıyla isteme bas; Katman teknolojiden bağımsız beyan edilmişse bunu, hiçbir bağ yoksa bir uyarıyı yaz.",
-            "Bölmelerin Türkçe ve İngilizce hanelerini yaz; MCP aracı ve komut satırı aynı çözümü kullansın."
+            "Bölmelerin Türkçe ve İngilizce hanelerini yaz; MCP aracı, komut satırı ve özerk döngü aynı çözümü kullansın."
           ]
           kabul: [
             "Bir Mockup referansının dosya yolu istemde basılır ve referans bütçesi çok küçük olduğunda bile kırpılmaz (testli).",
             "Diskte bulunmayan bir referans dosyası uyarı işaretiyle, bulunan dosya onay işaretiyle görünür ve görsel uzantılı dosya görsel notunu taşır (testli).",
             "Adımın Katmanına bağlı Takım ve Teknoloji adları istemde görünür; bağsız Katman uyarı satırı üretir (testli).",
             "İngilizce hane yeni bölmeleri İngilizce başlıklarla basar (testli).",
+            "Özerk döngünün üretici istemi referans dosyalarını mutlak yol ve disk işaretiyle taşır; klasörü gösteren beyan dosya sayılmaz (testli).",
             "On üç görsel referans veren gerçek bir Adımın brifinginde on üç yolun hepsi görünür; çekirdek süiti ve tip denetimi yeşildir."
           ]
           sınır: "Bu Adım istemin içeriğini genişletir, ajan seçimini ya da referans bütçesinin hükümlerini değiştirmez; görselin içeriği isteme özetlenmez, yalnız yolu verilir. Müşteri projelerinin verisi açık depoya girmez; gerçek kanıt depo dışında tutulur."
