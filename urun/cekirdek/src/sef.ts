@@ -15,12 +15,13 @@
 //   (parantezleme: kritik kısıt baş+son) · tpl-023 (halüsinasyon-guard).
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Program, Dugum, Deger } from "./sozdizim.ts";
 import { kodIndeksle, programlariYukle } from "./denetci.ts";
 import { koniCikar } from "./koni.ts";
-import { GERIBILDIRIM_KANALLARI } from "./kimlik.ts";   // EKL-F10-A12: Founder geribildirim kanalları
+import { GERIBILDIRIM_KANALLARI, dosyaMuhru } from "./kimlik.ts";   // EKL-F10-A12: Founder geribildirim kanalları · OSS-A12: mühürlü giriş canlı değildir
 import type { Koni } from "./koni.ts";
 import { paramMetni, degerMetni } from "./yolcoz.ts";
 import { ifadeDegerlendir } from "./kuralci.ts";
@@ -146,7 +147,48 @@ export interface BaglamPaket {
    *  yazdığı dört kanal (teşekkür · takdir · onur · öneri). Ajan hangi davranışın
    *  takdir edildiğini kaynaktan öğrenir; kanal yoksa bileşen doğmaz. */
   geribildirim?: GeribildirimÖzet[];
+  /** OSS-A12 (Founder hükmü 2026-11-12): Adımın referans verdiği dosya taşıyan
+   *  düğümlerin (Mockup başta) `dosya:` beyanları. Yol prompt'ta ASLA kırpılmaz;
+   *  disk durumu ve mutlak yol etkili kabukta (`referansDosyalariniDogrula`) dolar.
+   *  Dosya taşıyan referans yoksa bileşen doğmaz. */
+  referansDosyalari?: RefDosyaÖzet[];
+  /** OSS-A12: Adımın Katmanından türeyen yürütücü Takım ve yığın (MIM-1.4 zemini). */
+  yürütücü?: YürütücüÖzet;
   // Gelecek (runtime-state · sonraki aşamalar): anayasa · bellek · profil · kontrol noktası.
+}
+
+/** OSS-A12: bir referans düğümünün dosya beyanı. `yol` beyanın kendisidir ve
+ *  MIM-2.1 gereği proje köküne göredir; beyan yoksa alan boş kalır ve prompt
+ *  eksik beyanı adıyla söyler. `mutlak` ile `diskte` yalnız disk adımında dolar. */
+export interface RefDosyaÖzet {
+  kod: string;
+  /** Düğümün tipi — Mockup · Ekran · Tema · Sözleşme … */
+  tür: string;
+  yol?: string;
+  /** Düğümün ilan edildiği `.sar` dosyası (program haritası anahtarı). */
+  kaynak?: string;
+  /** Dosya bir Ekranın referansından geldiyse o Ekranın kodu. */
+  üzerinden?: string;
+  mutlak?: string;
+  /** Diskte bu yolda DÜZENLİ bir dosya var. Klasör ya da yok ise false. */
+  diskte?: boolean;
+  /** Yol diskte bir klasörü gösteriyor: ajana açılacak dosya gibi sunulamaz. */
+  klasör?: boolean;
+  /** Çözülen mutlak yol proje kökünün dışına taşıyor (MIM-2.1 teslim sayılmaz). */
+  kökDışı?: boolean;
+}
+
+/** OSS-A12: yürütücü yığının tek kalemi (Teknoloji ya da Takım kimliği + okunur adı). */
+export interface YığınKalemi { kod: string; ad: string; çözüldü: boolean }
+
+/** OSS-A12: Adımın Katman zemininden türeyen yürütücü Takım ve Teknolojiler. */
+export interface YürütücüÖzet {
+  katman?: { kod: string; ad?: string };
+  altKatman?: { kod: string; ad?: string; departman?: string };
+  takımlar: Array<YığınKalemi & { teknolojiler: YığınKalemi[] }>;
+  /** Katmanın `kullanır:` ile doğrudan bağlandığı Teknolojiler. */
+  teknolojiler: YığınKalemi[];
+  teknolojiBağımsız?: string;
 }
 
 /** Bir Adıma yazılmış tek kanal notu (EKL-F10-A12). */
@@ -327,6 +369,222 @@ export function meyveleriCoz(programlar: ReadonlyMap<string, Program>, node: Dug
       anlam: "meyve düğümü hiçbir `.sar` kaynağında bulunamadı — üretim yeri bilinmiyor",
     });
   }
+  return out;
+}
+
+// ── REFERANS DOSYALARI: AJAN DOSYAYI NEREDEN ALACAK (OSS-A12) ─────────────────
+//
+//   Founder hükmü 2026-11-12: bir Adımın kullanacağı referans görseller ve dosyalar
+//   isteme dosya yollarıyla birlikte girer ve ajan onları oradan alır. Ölçülen kusur:
+//   📎 Referans bölmesi Mockup düğümünün kendi `dosya:` beyanını hiç basmıyor, yalnız
+//   düğümün ilan edildiği `.sar` dosyasını gösteriyor ve açıklamayı bütçeye sığdırmak
+//   için kırpıyordu. Mockup dış gerçeğin ADRESİDİR (içeriği özetlenmez); adres
+//   basılmazsa referansın kendisi kaybolur. Bu yüzden dosya yolu ayrı bir bölmeye
+//   iner ve o bölme referans bütçesinin dışındadır: kırpma hükmü kartı kısaltabilir,
+//   yolu kısaltamaz (Üretir bölmesindeki "yol ASLA kırpılmaz" ilkesinin eşi).
+
+/** Dosyası ZORUNLU olan referans türleri: bu türden bir düğüm `dosya:` beyanı
+ *  taşımıyorsa prompt eksik beyanı adıyla söyler. Mockup dış bir dosyanın adresidir
+ *  ve dosyasız Mockup bir şey göstermez. Ekran, Tema ve Sözleşme gibi tipler içeriğini
+ *  çoğu zaman `.sar` gövdesinde taşır; onlar yalnız beyan VARSA listelenir. */
+const DOSYA_ZORUNLU_REFERANS: ReadonlySet<string> = new Set(["Mockup"]);
+
+/** Görsel sayılan uzantılar — ajan bu dosyaları işe başlamadan açıp incelemelidir. */
+const GORSEL_UZANTILARI: ReadonlySet<string> = new Set(["jpg", "jpeg", "png", "webp", "avif", "heic", "svg", "gif"]);
+
+/** Bir yolun görsel uzantısı taşıyıp taşımadığını söyler (saf). */
+export function gorselYoluMu(yol: string): boolean {
+  const m = /\.([A-Za-z0-9]+)$/u.exec(yol);
+  return !!m && GORSEL_UZANTILARI.has(m[1].toLowerCase());
+}
+
+/** Bir Adımın referans verdiği dosya taşıyan düğümleri toplar (saf).
+ *
+ *  İki kaynak okunur: ① Adımın kendi `referans:` hedefleri; ② Adımın referans,
+ *  bağımlılık ya da üretim kenarında duran Ekranların kendi `referans:` hedefleri
+ *  (tek atlama — ekranın mockup'ı çoğu zaman ekranın üstünde yazılıdır, Adımın
+ *  değil). Sıra kaynak sırasıdır ve aynı kod bir kez girer (determinizm). */
+export function referansDosyalariniCoz(
+  programlar: ReadonlyMap<string, Program>,
+  node: Dugum,
+  indeks: ReturnType<typeof kodIndeksle> = kodIndeksle(programlar),
+): RefDosyaÖzet[] {
+  const önbellek = new Map<string, Dugum | undefined>();
+  const çöz = (kod: string): Dugum | undefined => {
+    if (!önbellek.has(kod)) önbellek.set(kod, kodluDugumBul(programlar, kod));
+    return önbellek.get(kod);
+  };
+  const alanKodlari = (n: Dugum, ad: string): string[] => {
+    const p = alanBulGenel(n, ad);
+    return p ? kodlariCikar(p.deger) : [];
+  };
+  const out: RefDosyaÖzet[] = [];
+  const görülen = new Set<string>();
+  const ekle = (kod: string, hedef: Dugum | undefined, üzerinden?: string): void => {
+    if (!hedef || görülen.has(kod)) return;
+    const tür = hedef.tur === "kuralTanım" ? `Kural ${hedef.ad}` : hedef.ad;
+    const yol = alanMetni(hedef, "dosya");
+    if (!yol && !DOSYA_ZORUNLU_REFERANS.has(tür)) return;   // içeriği .sar'da yaşayan düğüm
+    görülen.add(kod);
+    const kaynak = indeks.get(kod)?.dosya;
+    out.push({ kod, tür, ...(yol ? { yol } : {}), ...(kaynak ? { kaynak } : {}), ...(üzerinden ? { üzerinden } : {}) });
+  };
+  for (const kod of alanKodlari(node, "referans")) ekle(kod, çöz(kod));
+  // Tek atlama: kenarlardaki Ekranların referansları. Ekranın kendisi yalnız Adımın
+  // referansıysa yukarıda listelenmiştir; üretim kenarındaki Ekranın `dosya:`'sı ise
+  // üretim yeridir ve Üretir bölmesinde basılır, burada değil.
+  const ekranlar: string[] = [];
+  for (const ad of ["referans", "bağımlı"]) for (const kod of alanKodlari(node, ad)) ekranlar.push(kod);
+  const üp = alanBulGenel(node, "üretir");
+  if (üp) {
+    for (const o of üp.deger.tur === "liste" ? (üp.deger.ogeler ?? []) : [üp.deger]) {
+      if (o.tur === "widget" && o.dugum?.ad === "Ekran") {
+        const k = paramMetni(o.dugum, "kod");
+        if (k) { önbellek.set(k, o.dugum); ekranlar.push(k); }
+      } else if ((o.tur === "kod" || o.tur === "metin") && o.metin) ekranlar.push(o.metin);
+    }
+  }
+  for (const ekKod of ekranlar) {
+    const ekran = çöz(ekKod);
+    if (!ekran || ekran.ad !== "Ekran") continue;
+    for (const kod of alanKodlari(ekran, "referans")) ekle(kod, çöz(kod), ekKod);
+  }
+  return out;
+}
+
+/** Bir dizinden yukarı doğru proje kökünü arar: canlı bir `*_anadizin.sar` ya da
+ *  `ana.sar` taşıyan ilk dizin (etkili — diski okur). Bulunamazsa undefined. */
+function projeKokuBul(başlangıç: string, okuma: Map<string, string[]>): string | undefined {
+  let d = başlangıç;
+  for (;;) {
+    let girdiler = okuma.get(d);
+    if (!girdiler) {
+      try { girdiler = readdirSync(d); } catch { girdiler = []; }
+      okuma.set(d, girdiler);
+    }
+    if (girdiler.some((g) => (g.endsWith("_anadizin.sar") || g === "ana.sar") && !dosyaMuhru(g))) return d;
+    const üst = dirname(d);
+    if (üst === d) return undefined;
+    d = üst;
+  }
+}
+
+/** Bir yolun diskteki türü: düzenli dosya, klasör ya da yok (ETKİLİ). Varlık
+ *  yetmez: klasörü gösteren bir `dosya:` beyanı ajana açılacak dosya değildir. */
+export type DiskTuru = "dosya" | "klasör" | "yok";
+export function diskTuru(yol: string): DiskTuru {
+  try {
+    const st = statSync(yol);
+    return st.isFile() ? "dosya" : st.isDirectory() ? "klasör" : "yok";
+  } catch { return "yok"; }
+}
+
+/** Paketteki referans dosyalarının mutlak yolunu ve disk durumunu doldurur (ETKİLİ).
+ *
+ *  Yol beyanı MIM-2.1 gereği PROJE köküne göredir, çağrı dizinine değil: şef çatıdan
+ *  da çağrılabilir. Proje kökü, beyanı taşıyan `.sar` dosyasının üstündeki anadizinden
+ *  türetilir; anadizin bulunamazsa çağrı dizini esas alınır. `türü` sınamada
+ *  değiştirilebilsin diye enjekte edilir. Saf çekirdek bu işlevi çağırmaz. */
+export function referansDosyalariniDogrula(
+  paket: BaglamPaket,
+  dizin: string,
+  türü: (yol: string) => DiskTuru = diskTuru,
+): BaglamPaket {
+  if (!paket.referansDosyalari?.length) return paket;
+  const kökDizin = resolve(dizin);
+  const okuma = new Map<string, string[]>();
+  const referansDosyalari = paket.referansDosyalari.map((d): RefDosyaÖzet => {
+    if (!d.yol) return d;
+    const kök = d.kaynak ? (projeKokuBul(dirname(resolve(kökDizin, d.kaynak)), okuma) ?? kökDizin) : kökDizin;
+    const mutlak = isAbsolute(d.yol) ? d.yol : resolve(kök, d.yol);
+    const göreli = relative(kök, mutlak);
+    const kökDışı = göreli.startsWith("..") || isAbsolute(göreli);
+    const tür = türü(mutlak);
+    return { ...d, mutlak, diskte: tür === "dosya", ...(tür === "klasör" ? { klasör: true } : {}), ...(kökDışı ? { kökDışı } : {}) };
+  });
+  return { ...paket, referansDosyalari };
+}
+
+// ── YÜRÜTÜCÜ TAKIM VE YIĞIN (OSS-A12 · MIM-1.4) ──────────────────────────────
+//
+//   Bir Adım hangi Katmanın içindeyse o Katmanın zemini (takım: Takımlar, kullanır:
+//   Teknoloji) işi kimin ve neyle yürüteceğini söyler. Prompt bunu bugüne kadar
+//   basmıyordu; ajan yığını görev metninden tahmin ediyordu. Zemin plandan okunur,
+//   seçim yapılmaz (STR-3: ajan seçimi gizli politikadır, burada yalnız BEYAN okunur).
+
+/** Yığın kalemlerinin okunur adı için tavan — kimlik tam, anlatı kısaltılır. */
+const YIGIN_AD_MAX = 90;
+
+/** Bir Adımın ata zincirini (dıştan içe) bulur (saf). */
+function adimSoyu(programlar: ReadonlyMap<string, Program>, adimKod: string): Dugum[] | undefined {
+  const yığın: Dugum[] = [];
+  let bulunan: Dugum[] | undefined;
+  const gez = (n: Dugum): void => {
+    if (bulunan) return;
+    if (n.ad === "Adım" && paramMetni(n, "kod") === adimKod) { bulunan = [...yığın]; return; }
+    yığın.push(n);
+    for (const c of n.cocuklar) { gez(c); if (bulunan) break; }
+    yığın.pop();
+  };
+  for (const p of programlar.values()) { for (const b of p.bildirimler) { gez(b); if (bulunan) break; } if (bulunan) break; }
+  return bulunan;
+}
+
+/** Bir düğümü yığın kalemine indirir: kod + (ad ya da kısaltılmış ne) (saf). */
+function yığınKalemi(programlar: ReadonlyMap<string, Program>, kod: string): YığınKalemi {
+  const n = kodluDugumBul(programlar, kod);
+  if (!n) return { kod, ad: "", çözüldü: false };
+  const ad = paramMetni(n, "ad") ?? alanMetni(n, "ad");
+  const ne = alanMetni(n, "ne");
+  const metin = ad || (ne.length > YIGIN_AD_MAX ? ne.slice(0, YIGIN_AD_MAX - 1) + "…" : ne);
+  return { kod, ad: metin, çözüldü: true };
+}
+
+/** Adımın Katman zemininden yürütücü Takımı ve Teknolojileri çözer (saf).
+ *  Adım hiçbir Katmanın içinde değilse `katman` boş döner ve prompt bunu söyler. */
+export function yurutucuCoz(programlar: ReadonlyMap<string, Program>, adimKod: string): YürütücüÖzet {
+  const soy = adimSoyu(programlar, adimKod) ?? [];
+  const katmanNode = [...soy].reverse().find((n) => n.ad === "Katman");
+  const altNode = [...soy].reverse().find((n) => n.ad === "AltKatman");
+  const out: YürütücüÖzet = { takımlar: [], teknolojiler: [] };
+  if (altNode) {
+    const kod = paramMetni(altNode, "kod") ?? "";
+    const ad = paramMetni(altNode, "ad");
+    const departman = alanMetni(altNode, "departman");
+    out.altKatman = { kod, ...(ad ? { ad } : {}), ...(departman ? { departman } : {}) };
+  }
+  if (!katmanNode) return out;
+  const kkod = paramMetni(katmanNode, "kod") ?? "";
+  const kad = paramMetni(katmanNode, "ad");
+  out.katman = { kod: kkod, ...(kad ? { ad: kad } : {}) };
+  const kodlar = (n: Dugum, ad: string): string[] => { const p = alanBulGenel(n, ad); return p ? kodlariCikar(p.deger) : []; };
+  // Kenarın yanlış tipe yönelmesi ORK-2.4 bekçisinin işidir; burada hedefin GERÇEK
+  // tipine bakılır ki yanlış kenarla yazılmış bir zemin de doğru bölmeye düşsün.
+  // Çözülemeyen kodun gerçek tipi bilinmez; o zaman geldiği KENAR söz sahibidir:
+  // `kullanır:` Teknoloji satırına, `takım:` Takım satırına düşer.
+  const takımKodları: string[] = [];
+  const tekKodları: string[] = [];
+  const kenarlar: Array<[string, "takım" | "kullanır"]> = [
+    ...kodlar(katmanNode, "takım").map((k): [string, "takım"] => [k, "takım"]),
+    ...kodlar(katmanNode, "kullanır").map((k): [string, "kullanır"] => [k, "kullanır"]),
+  ];
+  for (const [kod, kenar] of kenarlar) {
+    const n = kodluDugumBul(programlar, kod);
+    const teknolojiMi = n ? n.ad === "Teknoloji" : kenar === "kullanır";
+    if (teknolojiMi) { if (!tekKodları.includes(kod)) tekKodları.push(kod); }
+    else if (!takımKodları.includes(kod)) takımKodları.push(kod);
+  }
+  for (const kod of takımKodları) {
+    const kalem = yığınKalemi(programlar, kod);
+    const tn = kalem.çözüldü ? kodluDugumBul(programlar, kod) : undefined;
+    const teknolojiler = tn
+      ? [...new Set([...kodlar(tn, "bağımlı"), ...kodlar(tn, "kullanır")])].map((t) => yığınKalemi(programlar, t))
+      : [];
+    out.takımlar.push({ ...kalem, teknolojiler });
+  }
+  out.teknolojiler = tekKodları.map((t) => yığınKalemi(programlar, t));
+  const beyan = alanMetni(katmanNode, "teknolojiBağımsız");
+  if (beyan) out.teknolojiBağımsız = beyan;
   return out;
 }
 
@@ -640,11 +898,15 @@ export function baglamMontajla(
     const hedef = kodluDugumBul(programlar, r.kod);
     if (hedef && hedef.ad === "Adım") geribildirim.push(...geribildirimTopla(hedef, r.kod));
   }
+  // OSS-A12: dosya taşıyan referanslar ve Katman zemininden yürütücü yığın.
+  const referansDosyalari = referansDosyalariniCoz(programlar, node, indeks);
   return { adimKod, koni: koniCikar(node), referanslar, meyveler: meyveleriCoz(programlar, node),
            beceriler, kancalar,
            hatırlatıcılar: bagliHatirlaticilar(programlar, adimKod), öncekiDurak, etmen,
            ...(kavramÖnerileri && kavramÖnerileri.length ? { kavramÖnerileri } : {}),
-           ...(geribildirim.length ? { geribildirim } : {}) };
+           ...(geribildirim.length ? { geribildirim } : {}),
+           ...(referansDosyalari.length ? { referansDosyalari } : {}),
+           yürütücü: yurutucuCoz(programlar, adimKod) };
 }
 
 /** Kanon yolunu ("onyuz.bilesen.menü") kanonda çözüp Flutter eşlemesini döndürür (saf).
@@ -1040,6 +1302,83 @@ function meyveSatiri(m: MeyveÖzet, dil: BrifingDili = "tr"): string {
   return `- **${m.kod}** · ${m.tür} → ${hedef}${m.ne ? `\n  - ${m.ne}` : ""}`;
 }
 
+/** OSS-A12: 📁 Referans dosyaları bölmesi (saf). Bölme referans bütçesinin DIŞINDADIR
+ *  ve yolları ASLA kırpılmaz — bölmenin varlık sebebi ajanın dosyayı bulmasıdır.
+ *  Disk adımı koşmadıysa (`diskte` boş) işaret basılmaz, bu da bir notla söylenir. */
+export function referansDosyalariBolmesi(dosyalar: readonly RefDosyaÖzet[], dil: BrifingDili = "tr"): string[] {
+  if (!dosyalar.length) return [];
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
+  const s: string[] = [
+    y("## 📁 Referans dosyaları (işe başlamadan AÇ — yollar kırpılmaz)",
+      "## 📁 Reference files (OPEN them before you start — paths are never trimmed)"),
+    y("> Bu dosyalar Adımın referans verdiği düğümlerin `dosya:` beyanlarıdır ve yollar proje köküne göredir. İçerikleri isteme özetlenmez: işe başlamadan dosyanın kendisini aç, görsel üretimi ya da karşılaştırma işinde bu dosyaları referans girdisi olarak kullan.",
+      "> These files are the `dosya:` declarations of the nodes this Adım references, and the paths are relative to the project root. Their content is not summarised into the prompt: open the file itself before you start, and use these files as reference input for image generation or comparison."),
+  ];
+  if (dosyalar.some((d) => d.yol && d.diskte === undefined)) {
+    s.push(y("> Disk denetimi bu yüzde koşmadı; dosyanın varlığını açmadan önce doğrula.",
+      "> The disk check did not run on this surface; verify that each file exists before you open it."));
+  }
+  for (const d of dosyalar) {
+    const yoldan = d.üzerinden ? y(` (${d.üzerinden} ekranının referansı)`, ` (referenced by the Ekran ${d.üzerinden})`) : "";
+    if (!d.yol) {
+      s.push(`- ${d.kod} · ${d.tür} · ` + y(
+        "⚠️ yol beyan edilmemiş — düğümün `dosya:` alanına proje köküne göreli yolu yaz (MIM-2.1); dosyayı tahminle arama",
+        "⚠️ path not declared — write the project-root-relative path into the node's `dosya:` field (MIM-2.1); do not search for the file by guessing") + yoldan);
+      continue;
+    }
+    const disk = d.diskte === true ? " ✓"
+      : d.klasör ? y(" ⚠️ klasör, dosya değil — beyanı klasörün içindeki dosyaya çevir", " ⚠️ a folder, not a file — point the declaration at the file inside it")
+      : d.diskte === false ? y(" ⚠️ yok", " ⚠️ missing") : "";
+    const dış = d.kökDışı ? y(" ⚠️ proje kökünün dışına taşıyor (MIM-2.1)", " ⚠️ escapes the project root (MIM-2.1)") : "";
+    const görsel = gorselYoluMu(d.yol) ? y(" — görsel — işe başlamadan aç ve incele", " — image — open and inspect it before you start") : "";
+    s.push(`- ${d.kod} · ${d.tür} · \`${d.yol}\`${disk}${dış}${yoldan}${görsel}`);
+    if (d.mutlak && d.mutlak !== d.yol) s.push(y("  - mutlak: ", "  - absolute: ") + `\`${d.mutlak}\``);
+  }
+  s.push("");
+  return s;
+}
+
+/** OSS-A12: 🧑‍🔧 Yürütücü Takım ve Yığın bölmesi (saf). Zemin yoksa bunu açıkça yazar. */
+export function yurutucuBolmesi(yr: YürütücüÖzet | undefined, dil: BrifingDili = "tr"): string[] {
+  if (!yr) return [];
+  const y = (tr: string, en: string): string => (dil === "en" ? en : tr);
+  const kalem = (k: YığınKalemi): string =>
+    k.çözüldü ? `${k.kod}${k.ad ? ` (${k.ad})` : ""}` : `${k.kod} ${y("(⚠️ çözülmedi)", "(⚠️ unresolved)")}`;
+  const s: string[] = [y("## 🧑‍🔧 Yürütücü Takım ve Yığın", "## 🧑‍🔧 Executing Takım and stack")];
+  if (!yr.katman) {
+    s.push(y("- ⚠️ Adım hiçbir Katmanın içinde değil — yürütücü Takım ve yığın plandan türetilemiyor; yığını tahmin etme, sor.",
+      "- ⚠️ The Adım is not inside any Katman — the executing Takım and stack cannot be derived from the plan; do not guess the stack, ask."), "");
+    return s;
+  }
+  s.push(`- Katman: ${yr.katman.kod}${yr.katman.ad ? ` (${yr.katman.ad})` : ""}`);
+  if (yr.altKatman) {
+    s.push(`- AltKatman: ${yr.altKatman.kod}${yr.altKatman.ad ? ` (${yr.altKatman.ad})` : ""}` +
+      (yr.altKatman.departman ? ` · departman: ${yr.altKatman.departman}` : ""));
+  }
+  for (const t of yr.takımlar) {
+    s.push(`- ${y("Takım", "Takım")}: ${t.çözüldü ? `${t.kod}${t.ad ? ` — ${t.ad}` : ""}` : `${t.kod} ${y("(⚠️ çözülmedi)", "(⚠️ unresolved)")}`}`);
+    if (t.teknolojiler.length) s.push(y("  - Teknolojiler: ", "  - Teknoloji nodes: ") + t.teknolojiler.map(kalem).join(" · "));
+    else if (t.çözüldü) s.push(y("  - ⚠️ Takımın Teknoloji bağı yok — yığın bu Takımdan okunamıyor.", "  - ⚠️ The Takım has no Teknoloji link — the stack cannot be read from this Takım."));
+  }
+  if (yr.teknolojiler.length) {
+    s.push(y("- Teknoloji (Katmanın kullanır bağı): ", "- Teknoloji (the Katman's `kullanır` link): ") + yr.teknolojiler.map(kalem).join(" · "));
+  }
+  if (yr.teknolojiBağımsız) {
+    s.push(`- teknolojiBağımsız: ${yr.teknolojiBağımsız} ` + y("(Katman teknolojiden bağımsız beyan edilmiş — doğuş anına özgü geçici kaçış)",
+      "(the Katman is declared technology-independent — a temporary escape that belongs to the moment of birth)"));
+  }
+  if (!yr.takımlar.length && yr.teknolojiler.length) {
+    s.push(y("- ℹ️ Katmanın takım: bağı yok — yığın Katmanın doğrudan Teknoloji bağından okunur.",
+      "- ℹ️ The Katman has no `takım:` link — the stack is read from the Katman's direct Teknoloji link."));
+  }
+  if (!yr.takımlar.length && !yr.teknolojiler.length && !yr.teknolojiBağımsız) {
+    s.push(y("- ⚠️ Katmanın ne takım: ne kullanır: bağı var — yürütücü yığın bilinmiyor; varsayım yapma, sor (MIM-1.4).",
+      "- ⚠️ The Katman has neither a `takım:` nor a `kullanır:` link — the executing stack is unknown; do not assume, ask (MIM-1.4)."));
+  }
+  s.push("");
+  return s;
+}
+
 /**
  * Bağlam paketinden prompt üretir (saf).
  * WF-ORCH §6 parantezleme: kritik kısıtlar (dokunulmaz+sınır) BAŞTA, görev ortada,
@@ -1059,6 +1398,10 @@ export function promptUret(paket: BaglamPaket, dil: BrifingDili = "tr"): string 
   s.push(GUARD_HANELERI[dil], "");
   // ORTA — görev + koni gövdesi
   s.push(y("## 🎯 Görev", "## 🎯 The task (`görev`)"), bos(k.görev) ? y("(tanımsız)", "(undefined)") : k.görev, "");
+  // OSS-A12: referans dosyaları Görevden HEMEN sonra — ajan yolları atlamasın; ardından
+  // işi kimin ve neyle yürüteceği (Katman zemini).
+  s.push(...referansDosyalariBolmesi(paket.referansDosyalari ?? [], dil));
+  s.push(...yurutucuBolmesi(paket.yürütücü, dil));
   // İkinci kusur: meyvenin kodu, türü ve HEDEF YOLU ayrı ayrı basılır. Eskiden bu
   // başlığın altına koninin ham `üretir` metni düşüyordu ve satır-içi meyve orada
   // `Veri(…)` diye görünüyordu: ajan "bunu üret" emrini alıp nereye üreteceğini
@@ -1166,6 +1509,20 @@ export function promptUret(paket: BaglamPaket, dil: BrifingDili = "tr"): string 
   s.push("---", y("## 🔁 Kritik-kısıt özeti (son)", "## 🔁 Critical-constraint summary (end)"));
   s.push(y("- Kabul: ", "- kabul: ") + (bos(k.kabul) ? "—" : k.kabul));
   s.push(y("- Dokunulmaza dokunma: ", "- Do not touch (`dokunulmaz`): ") + (bos(k.dokunulmaz) ? "—" : k.dokunulmaz));
+  // OSS-A12: referans dosyaları kapanışta bir kez daha anılır (parantezin kapanışı).
+  const rd = paket.referansDosyalari ?? [];
+  if (rd.length) {
+    // Sayılar ayrıdır: "N dosya" yolu beyan edilmiş girdilerdir; diskte olmayan ve
+    // klasör çıkan onların İÇİNDEN, yolu beyan edilmemiş ise onların DIŞINDAN sayılır.
+    const yollu = rd.filter((d) => d.yol).length;
+    const diskteYok = rd.filter((d) => d.yol && d.diskte === false && !d.klasör).length;
+    const klasör = rd.filter((d) => d.yol && d.klasör).length;
+    const beyansız = rd.filter((d) => !d.yol).length;
+    s.push(y(`- Referans dosyaları: ${yollu} dosya (bölmeye bak)`, `- Reference files: ${yollu} files (see the section)`) +
+      (diskteYok ? y(` · ⚠️ ${diskteYok} diskte yok`, ` · ⚠️ ${diskteYok} missing on disk`) : "") +
+      (klasör ? y(` · ⚠️ ${klasör} klasör`, ` · ⚠️ ${klasör} folder${klasör > 1 ? "s" : ""}`) : "") +
+      (beyansız ? y(` · ⚠️ ${beyansız} yol beyan edilmemiş`, ` · ⚠️ ${beyansız} path${beyansız > 1 ? "s" : ""} not declared`) : ""));
+  }
   return s.join("\n");
 }
 
@@ -1193,11 +1550,12 @@ export function programVeMuaflar(
 /** `sarmal sef <ADIM-KOD> [dizin]` — dizindeki .sar'ları parse edip Adım'ın prompt+token raporunu basar. */
 export function sefKomutu(dizin: string, adimKod: string): number {
   const programlar = programHaritasi(dizin);
-  const paket = baglamMontajla(programlar, adimKod, undefined, undefined, kavramVerisiYukle());
-  if (!paket) {
+  const montaj = baglamMontajla(programlar, adimKod, undefined, undefined, kavramVerisiYukle());
+  if (!montaj) {
     console.error(`✖ '${adimKod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı).`);
     return 4;
   }
+  const paket = referansDosyalariniDogrula(montaj, dizin);   // OSS-A12: mutlak yol + disk durumu
   const prompt = promptUret(paket);
   const toplam = tokenSay(prompt);
   console.log(prompt);

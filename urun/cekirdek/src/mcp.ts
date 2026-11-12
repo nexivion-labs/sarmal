@@ -47,7 +47,7 @@ import { dogusEksikTanilari, anadizinBul, adAlaniKapisi, yolTuru } from "./denet
 import { siniflamaYukle, siniflamaOrtuMerge, siniflamaOrtuYukle, type Siniflama } from "./siniflama.ts";
 import { ogretKarti, dogusAnlatisi } from "./ogret.ts";   // davranış-katmanı turu: öğretim kapısı — CLI ile aynı kaynak (YUZ-1.2)
 import { beceriKartiBul } from "./beceri-karti.ts";   // BKM-DNT-A16: konu kartı araması tek gövdeden okunur
-import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle } from "./sef.ts";
+import { programHaritasi, baglamMontajla, promptUret, tokenSay, kavramVerisiYukle, referansDosyalariniDogrula } from "./sef.ts";
 import { karneRaporu } from "./karne.ts";   // EMJ-A05: karne raporu yüzü
 import { cevir, dilHanesi, etkinCiktiDili, sozlukDuzYazisi } from "./cevir.ts";
 import { MCP_ARAC_ADI, MCP_KOK_DISI_NOTU, MCP_SUNUCU_TALIMATI, mcpAracSemalari } from "./mcp-metinleri.ts";
@@ -445,7 +445,8 @@ function sefAraci(dizin: string, adimKod: string): { metin: string; isError: boo
     return { metin: y(`✖ '${adimKod}' kodlu Adım bulunamadı (${programlar.size} .sar tarandı — dizin: ${dizin}). Kodu doğrula: gezin(${adimKod}) düğümü iki yönde gösterir; yanlış dizin verdiysen kökü düzelt.`,
       `✖ No Adım with KOD '${adimKod}' was found (${programlar.size} .sar files scanned — dizin: ${dizin}). Check the KOD: gezin(${adimKod}) shows the node in both directions; if you passed the wrong dizin, correct the root.`), isError: true };
   }
-  const prompt = promptUret(paket, MCP_DILI);
+  // OSS-A12: referans dosyalarının mutlak yolu ve disk durumu CLI ile aynı çözümden gelir.
+  const prompt = promptUret(referansDosyalariniDogrula(paket, dizin), MCP_DILI);
   return { metin: `${prompt}\n\n📊 ~${tokenSay(prompt)} ${y("token (yaklaşık)", "tokens (approximate)")}`, isError: false };
 }
 
