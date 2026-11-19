@@ -2983,13 +2983,15 @@ export function docDriftTanilari(
   }
 
   const diskDosyalari = new Set(disk.girdiler.filter((g) => g.tur === "dosya").map((g) => g.yol));
+  const yoksayilanlar = new Set(disk.yoksayilanDosyalar ?? []);   // EKL-F6-A07: adıyla yok sayılan derleme çıktısı
   const out: Array<{ dosya: string; tani: Tani }> = [];
   for (const u of uretenler) {
     const beyan = meyveDosyasi.get(u.meyve);
     if (!beyan) continue;   // dosyasız meyve (.sar-içi artefakt) → kırık-referans'ın işi
-    if (diskDosyalari.has(beyan.replace(/^\.\//, ""))) continue;
+    const temiz = beyan.replace(/^\.\//, "");
+    if (diskDosyalari.has(temiz) || yoksayilanlar.has(temiz)) continue;
     // Tarama-kapsamı dışı (sablon/arsiv gibi) meyve diskte gerçekten olabilir — ikinci şans.
-    if (kok && existsSync(join(kok, beyan.replace(/^\.\//, "")))) continue;
+    if (kok && existsSync(join(kok, temiz))) continue;
     out.push({
       dosya: u.dosya,
       tani: eskiTani("doc-drift", "uyarı",

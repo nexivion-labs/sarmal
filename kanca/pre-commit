@@ -45,6 +45,12 @@ if ! node "$MOTOR" denetle "$VARLIK" >/tmp/sarmal-kapi.log 2>&1; then
   echo "  → düzelt, ya da bilinçliyse:  git commit --no-verify"
   exit 1
 fi
+DENETIM_UYARILI=0
+if grep -q "── ÖZET:" /tmp/sarmal-kapi.log 2>/dev/null; then
+  DENETIM_UYARILI=1
+  echo "⚠️ sarmal-kapı: denetimde UYARI VAR (commit geçer, ancak CI YAS-4.1 gereği 0 uyarı ister):"
+  grep -E "^(⚠|── ÖZET:)" /tmp/sarmal-kapi.log | head -12
+fi
 
 # — ①·a DOSYA MÜHRÜ OLAYI (KPS-MHR-A01 · MIM-3.4 · Founder hükmü 2026-09-11) —
 #   Bir dosyanın mühürlenmesi işleme kapısında GÖRÜNÜR bir olaydır. Bu işleme bir
@@ -257,5 +263,9 @@ fi
 KURAL="$VARLIK/kanca/proje-kurallari.sh"
 [ -x "$KURAL" ] && { "$KURAL" || exit 1; }
 
-echo "🚪✅ sarmal-kapı: drift yok — commit geçti"
+if [ "$DENETIM_UYARILI" -eq 1 ]; then
+  echo "⚠️ sarmal-kapı: uyarı var — commit geçti (CI için uyarıları gider)"
+else
+  echo "🚪✅ sarmal-kapı: drift yok — commit geçti"
+fi
 exit 0
