@@ -104,16 +104,16 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         🧭 SIKIŞTIRMA ÖNCESİ NOT · OTURUM 116 (2026-10-29 sabah). Founder'ın sıkıştırmadan sonraki ilk isteği iki
         dış kaynaklı yönergenin kurulmasıdır: kaynaksız rakam üretmeyi yasaklayan ve her rakamı kaynağına karşı
         geçti, kaldı ya da engellendi diye işaretleyen ilk ilkeler yönergesi hem çalışma alanımızdaki sisteme hem
-        Founder'ın Grok'taki araştırma botuna yerleştirilecektir; Türkiye mevzuatına göre kodu yalnız okuyarak altı
-        başlıkta tarayan hukuk yönergesi 0.9.199 kurulduktan sonra hesap sisteminde ve sitede koşturulacaktır.
+        Founder'ın kullandığı bir dış araştırma aracına yerleştirilecektir; Türkiye mevzuatına göre kodu yalnız okuyarak
+        altı başlıkta tarayan hukuk yönergesi 0.9.199 kurulduktan sonra özel bir projede ve sitede koşturulacaktır.
         Hukuk yönergesinin KVKK rakamları (aydınlatma 1.709.200 TL, veri güvenliği 17.092.242 TL üst sınır) kaynaktan
-        doğrulanmıştır. Ön taramada site, hesap ve eklentide dışarıdan çekilen yazı tipi ya da takip kodu
+        doğrulanmıştır. Ön taramada sitede, özel bir projede ve eklentide dışarıdan çekilen yazı tipi ya da takip kodu
         bulunmamış; pazarlamanın yayımlanacak rehber sayfası üç yazı tipini Google'ın sunucusundan çekmektedir ve
         yayından önce gömülmelidir. Reel izleyen ajan rehberi değerlendirilmiş, Instagram'ın otomasyon yasağı
         nedeniyle ancak ayrı hesap ve ayrı telefonla, tercihen yorum yazmayan biçimde düşünülmesi önerilmiştir.
         Bekleyenler: 0.9.199'un kurulması ve Founder kontrol listesi (gözünü bekleyen dokuz Mağaza ve hasat Adımı
-        dahil), site deposundaki sekiz beklemeye alma değişikliğinin işlenme izni, kapalı ürünün müşteri tarafındaki
-        otomasyon teklifinin cevabı ve yurt dışı pilot için tanışma mesajlarının gözden geçirilmesi.
+        dahil), site deposundaki sekiz beklemeye alma değişikliğinin işlenme izni ve kapalı tarafta yürüyen, Sarmal'ın
+        kapsamı dışındaki iki işin sonuçlanması.
 
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PANELİN KODU TAMAM, 0.9.199 PAKETLENDİ.
         Panel Blokunun bütün kod Adımları kapanmıştır: onay sayacı, proje simgesi ve Ray işareti (PNL-A08, A25,
@@ -122,21 +122,18 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         çözülmüştür. Sürüm 0.9.199'a ilerlemiş (e95e854) ve paket kurulmadan hazırlanmıştır; kontrolcünün bağımsız
         koşusunda gerçek VS Code süiti 82/82, eklenti süiti 1181/1181, çatı köküyle görsel kontrol 814/814'tür.
         Kurulum Founder'ın dönüşünü ve onayını bekler; ardından PNL-A16 ve PNL-A17 teslim onayları alınır. Açık
-        kalan panel işi yalnız Ayarlar sekmesidir (PNL-A10). Kapalı üründe lider ajan kartı yazılmış ve onaylanmıştır
-        (KLT-APEX-A01); Tren şeması onu gerçek veriden apex koltuğuna oturtur. Aynı gece kapalı ürünün müşteri
-        tarafında bir otomasyon sistemi teklifi hazırlanmış ve Founder'a iletilmiştir; ayrıntısı müşteri çalışma
-        alanındadır.
+        kalan panel işi yalnız Ayarlar sekmesidir (PNL-A10). Kapalı tarafta bir iş yürütülmüş ve onaylanmıştır; Tren
+        şeması tepe koltuğunu bu işin ürettiği gerçek veriden doldurur. Aynı gece kapalı tarafta Sarmal'ın kapsamı
+        dışında kalan bir iş daha yürütülmüştür ve ayrıntısı o tarafın kendi kaydındadır.
 
         🧭 LİMİT ÖNCESİ NOT · OTURUM 116 (2026-10-28 gece). Kullanım limiti dolmak üzereyken kaldığımız yer: iki
         üretici ajan çalışmaktadır. Biri ana ağaçta PNL-A08, PNL-A25 ve PNL-A21'i, öteki .claude/worktrees altındaki
         çalışma kopyasında PNL-A11'i (Founder kararıyla bu turda yalnız şeritler görünümü, HTR-TREN-IKI-GORUNUM) ve
         PNL-A13'ü yürütmektedir; ikisinin de işi işlenmemiştir ve diskte durur. Yarım Adımları ölçen ajan limit için
-        durdurulmuştur. İşlenmemiş kayıtlar: OZK-16 (Tren yalnız ajanları, Makinist insanları gösterir; koltuk kişiden
-        ayrıdır; tepede tek lider ajan koltuğunda kontrolcü oturum oturur; denetim doğrudan insan katmanına bağlıdır),
-        PNL-A11 metni ve bu not; kapalı üründe tepe şeması kararı, apex kartı Adımının güncellemesi ve temizlik Bloku.
-        Sıradaki: ajanların teslimini ölç ve işle, apex kartını kapalı üründe yazdır, Tren worktree'sini ana dala al,
-        0.9.199'u paketle; ardından işçi Bloku (eklentinin ağırlığının kök nedeni) plan küçültme oturumunda ilk sıraya
-        önerilecektir.
+        durdurulmuştur. İşlenmemiş kayıtlar Tren şemasının örgüt modelini bağlayan OZK-16 kararı, PNL-A11 metni ve bu
+        nottur; kapalı tarafta da işlenmemiş kayıtlar bulunmaktadır. Sıradaki işler ajanların teslimini ölçüp işlemek,
+        kapalı taraftaki işi tamamlamak, Tren çalışma kopyasını ana dala almak ve 0.9.199'u paketlemektir; ardından
+        işçi Bloku (eklentinin ağırlığının kök nedeni) plan küçültme oturumunda ilk sıraya önerilecektir.
 
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28 gece) · PLANIN YÜKÜ ÖLÇÜLDÜ, PANEL SON ADIMLARINDA.
         Founder açık işlerin çorbaya döndüğünü ve hiçbir işin bitmediğini bildirmiştir. Ölçümde yedi projede 494 Adım
@@ -147,11 +144,11 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         ardından 45 yarım Adım kanıtla ya kapanır ya beklemeye döner, sonra Founder ile planı şimdi, sonra ve rafa
         diye küçülten bir oturum yapılır. Aynı akşam işlenenler: sinyallerin türe göre toplanması (PNL-A28, fb9192f;
         kapalı ürünün Bilgi bandı 1085 satırdan 21 satıra inmiştir), sekme sırasının bugünkü hâliyle varsayılan
-        kalması (PNL-A23) ve kapalı üründe departman adları. Founder'ın hükümleri: Tren şemasının şeritler,
+        kalması (PNL-A23) ve kapalı tarafta yürütülen bir ad düzenlemesi. Founder'ın hükümleri: Tren şemasının şeritler,
         sütunlar ve kart ızgarası görünümlerinin üçü de bulunur ve ayardan değişir, varsayılan şeritlerdir (PNL-A11);
         Ayarlar sekmesinde Mini Graf, Tren ve Makinist görünümlerini taşıyan bir Görünüm bölümü olur (PNL-A10); tek
         kararlı sürüm önce ana dala birleştirme, ardından mağazada 1.0.0 demektir ve yayından önce son kez sorulur
-        (PNL-A17). Kapalı ürünün tanı borcu için bir temizlik Bloku kendi planının son Fazına yazılmış, Founder'ın sözüyle geliştirme
+        (PNL-A17). Kapalı tarafın tanı borcu için kendi planında bir iş açılmıştır; bu iş Founder'ın sözüyle geliştirme
         bittikten sonra başlayacaktır ve henüz işlenmemiştir.
 
         🧭 ARA DEVİR · OTURUM 116 (2026-10-28 akşam) · SİNYALLER, SÜRÜKLENEN SEKMELER, MOR TÜL VE SORUNLAR AYARI.
@@ -164,7 +161,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         beklemektedir; PNL-A26 (odak turu) üretici tarafından teslim edilmiş ve doğrulanmayı beklemekte, PNL-A27
         (dal açma) üretimdedir. Tren sekmesi ayrı bir çalışma kopyasında üretimdedir (PNL-A12 bitmek üzere; PNL-A11
         şirket şeması Founder'ın seçtiği departman sütunları ve yelpaze iplikleriyle kodlanacak, ardından PNL-A13).
-        Departman adları Founder'ın seçimiyle orkestrasyonun ilan dosyasında değiştirilmiş ve orada işlenmeyi
+        Departman adlarına dair bir değişiklik Founder'ın seçimiyle kapalı tarafta yapılmıştır ve orada işlenmeyi
         beklemektedir. Founder ayrıca Makinist'in projedeki insanları GitHub üzerinden bağlamasına ve her onayın
         onaylayanın kimliğiyle kayda geçmesine hükmetmiştir (OZK-15); Blokun iskeleti Founder'a gösterilmiş, içerik
         onayı beklenmektedir ve OZK-15 plana inene kadar uygulanmamış karar uyarısı verir. Açık işler: PNL-A08 sayıların
@@ -341,10 +338,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         adıyla kendi özel deposunda sıfır geçmişle doğdu; site çatıya alındı ve
         Nexivion-WorkspaceFramework adı diskten kalktı. Dört deponun üçü uzak
         adresinde yaşar, açık deponun ilk gönderimi bilinçli olarak canlı açılışa
-        bırakılmıştır. Kadro yerleşiminde teknoloji direktörleri kendi alan
-        klasörlerinde uzmanlarının yanında kaldı ve üstlerine kademeli bir kıdemli
-        katman ilan edildi (icra · iş alanı · denetim); Flutter direktörünün pilot
-        dosyasından kalma apex ilanı yönetici türüne çevrildi. Motor tarafında iki
+        bırakılmıştır. Kapalı tarafta da bir yerleşim düzenlemesi yapıldı ve
+        oradaki bir tür ilanı düzeltildi. Motor tarafında iki
         kalıcı iş yapıldı: açık-gizli sınır nöbeti artık kapalı tarafta olduğunu
         klasör adından değil projenin kendi `görünürlük` beyanından çözüyor ve bu
         mutasyonla kanıtlandı; yol haritası paneli kod göstermeyi bıraktı, adı
@@ -1633,9 +1628,9 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         ═══ OTURUM 105 · 2026-09-01 ═══
 
         SAHA SINAVI CANLI BAŞLADI. Founder gerçek bir müşteri projesi açmıştır
-        (bir mühendislik firmasının sitesi, masaüstünde ayrı klasör ve ayrı depo) ve harici bir
+        (bir müşterinin sitesi, ayrı klasörde ve ayrı depoda) ve harici bir
         ajana tek satır kod yazmadan önce Sarmal MCP ile planlama yaptırmaktadır.
-        Bu koşu BLK-SOL-IDA-TEST Blokunun ta kendisidir ve o Blok, Founder'ın
+        Bu koşu saha sınavı Blokunun ta kendisidir ve o Blok, Founder'ın
         gerçek örnek projesi beklendiği için 2026-07-19 tarihinden beri bilinçle
         açık tutulmaktaydı; bekleyen proje bugün gelmiştir. Blokun altı Adımından
         üçü fiilen koşmuştur: MCP kurulumu yapılmış, örnek proje bağlamı verilmiş
@@ -1802,8 +1797,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         ⑧ İKİ YÜZ KIRK ÜÇ EKRAN FOTOĞRAFI HASAT EDİLDİ. Founder'ın telefonundan
         aktarılan kareler tek ajanla okundu ve yirmi bir depo, on iki araç, on
         yöntem ile sekiz fikir laboratuvarın bilgi rafına indi. En değerlisi tek
-        kişilik işletme için açık kaynaklı bir komuta merkezidir ve Z1 hükmünün
-        tarif ettiği iş alanı ekseninin çalışan hâlidir. Bir uyarı da çıktı:
+        kişilik işletme için açık kaynaklı bir komuta merkezidir ve kapalı tarafın
+        ilgi alanına doğrudan dokunmaktadır. Bir uyarı da çıktı:
         üretimde Sonnet yasağının dayandığı ölçüm bayatlamıştır ve hüküm
         kendiliğinden düşmez fakat yeniden ölçülmelidir.
 
@@ -1821,7 +1816,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         Katmanı açıldı: endüstri ölçümü yüzde yetmiş verdi, CI ve ESLint yayın
         öncesi p0, denetçi dosyasının bölünmesi yayın sonrası p2. Lansman
         triyajı yapıldı: 26 açık Adımın üçü fiilen bitmiş, sekizi yarım saatlik,
-        on beşi büyük. İki rahatsız edici bulgu: Sol-IDA sınavı canlı koşarken
+        on beşi büyük. İki rahatsız edici bulgu: saha sınavı canlı koşarken
         planda beklemede görünüyor; Codex'in MCP ayarı silinen eski depo yoluna
         işaret ediyor. Kontrolcü bu oturumda iki hata yaptı ve ikisi geri
         alındı: var olan LICENSE.md ile NOTICE.md dosyalarını görmeden üzerine
@@ -2021,9 +2016,9 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         graftan tamamen düşmekte, karne yirmi sekiz düğümden yirmi ikiye inmekte ve
         denetim o ağaç için sıfır hata demektedir; sessiz görünmezlik yanlış bir
         yeşile dönüşmektedir. Bulgu iki koşumla, tek fark klasör adı olacak biçimde
-        kanıtlanmıştır. Kusur Founder'ın kurmak istediği ajans çatısının merkezine
-        düşer, çünkü o çatının üç ana kitaplığından biri web sitesi şablonlarıdır ve
-        her şablon kendi Proje köküdür. Onarımın üç yolu da kanonun OGR-5 hükmüne
+        kanıtlanmıştır. Kusur Founder'ın kurmak istediği özel bir çalışma alanının
+        merkezine düşer, çünkü o alanın ana kitaplıklarından biri web sitesi
+        şablonlarıdır ve her şablon kendi Proje köküdür. Onarımın üç yolu da kanonun OGR-5 hükmüne
         dokunduğu için seçim Founder kapısındadır. Öteki dört bulgu şunlardır: doğan
         ağacın sunucu kaydı motor yolunu mutlak yazar ve uyarı yalnız doğum anında
         görünür; gezinme aracı deve gövdeli bir kaynak sembolünü adresleyemez ve
@@ -2031,12 +2026,12 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         ve doğan ağacın rafıyla ayrışır; sunucu araç açıklamalarındaki bir örnek Adım
         kodu hiçbir yerde tanımlı değildir.
 
-        AJANS PROVASI: çatı denemesi kuruldu ve her proje kendi kökünden sıfır hata
+        ÇATI PROVASI: çatı denemesi kuruldu ve her proje kendi kökünden sıfır hata
         verdi. Çatı kökünden koşulan denetim iki kusur gösterir; birincisi yukarıdaki
         şablon görünmezliğidir, ikincisi çatı denetiminin kapsanan projeleri kendi
         kimliklerinden çözmemesidir ve o zaten kayıtlı bir açıktır. Founder gerçek
-        ağacı adım adım birlikte kurmak istediğini bildirmiştir; bu yüzden ajans
-        ağacı çatı altına KURULMAMIŞTIR ve prova ağacı geçici alanda kalmıştır.
+        ağacı adım adım birlikte kurmak istediğini bildirmiştir; bu yüzden gerçek
+        ağaç çatı altına KURULMAMIŞTIR ve prova ağacı geçici alanda kalmıştır.
 
         Git'e bugün hiçbir şey işlenmemiş ve hiçbir şey gönderilmemiştir; inceleme ve
         onay Founder'ındır.
@@ -2059,8 +2054,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         OTURUM 111 DEVAMI (10 Eylül akşamı ile 11 Eylül gecesi · çatı kökünden tek
         denetim ve dosya mühürleri): oturum gece yarısını geçerek sürdüğü için
         numarası değişmemiş, kaydın tarihi 11 Eylül olarak tazelenmiştir. Founder'ın
-        hükmüyle ders dışlaması kendi evine demirlendi (KPS-IND-A01) ve ajans
-        çatısının önündeki üç motor borcu kapatıldı. Çatı artık altındaki Proje
+        hükmüyle ders dışlaması kendi evine demirlendi (KPS-IND-A01) ve kurulacak
+        çalışma alanının önündeki üç motor borcu kapatıldı. Çatı artık altındaki Proje
         köklerini sahiplenmektedir (KPS-CAT-A01). Aynı şablondan doğan kardeş
         projelerin kodları tek düğüme çökmek yerine kendi Projeleri altında ayrı
         yaşamaktadır (KPS-KOD-A01; iki kalemi açıktır). Çatı kökünden koşan tek bir
@@ -2121,7 +2116,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         gerekçesi, on bir Blokun aynı anda açık durmasının ORK-3.5 maddesinin
         öngördüğü sıralı yürütmeyle çelişmesi ve bu yüzden hiçbir Blokun
         bitmemesidir; çalışma bundan sonra bir kerede tek Blokta yürüyecektir.
-        Hükmün ilk uygulamasında Founder saha sınavının (BLK-SOL-IDA-TEST) artık
+        Hükmün ilk uygulamasında Founder saha sınavı Blokunun artık
         gereksiz olduğunu beyan etmiş ve Blok açık üç Adımıyla birlikte arşiv mührü
         almıştır; hiç başlamamış panel kipi ile işçi gövdeleri ise sonraya
         bırakılmış ve dosyaları hatırlatıcılar yüzeyinde görünür kalacak biçimde
@@ -2150,8 +2145,8 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         gerektiğini beyan etmiştir. Hükmün amacı, yani işlerin yarım
         kalmaması, aynı anda tek Blok ilkesiyle korunmakta, kaldırılan tek şey
         bir projenin ötekini kilitlemesidir. Hükmün ilk uygulaması orkestrasyon
-        projesinin yeni iskeletidir: iskelet doğacak, yedi Faz yol haritasında
-        görünecek ve yalnız ilk Fazın ilk Bloku geliştirmeye alınacaktır. Bu
+        projesinin yeni iskeletidir: iskelet doğacak ve yalnız ilk Fazın ilk
+        Bloku geliştirmeye alınacaktır. Bu
         hüküm, 2026-09-12 hükmünün mevcut Adımlar bitmeden yeni plan
         açılmayacağını söyleyen cümlesinin yerini alır; o hükmün geri kalanı,
         yani ilk uygulamasına ait kayıtlar, tarih olarak yerinde durur.
@@ -2238,7 +2233,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         belirlenecektir. Sarmal için bitiş çizgisini Founder üç olay olarak kabul
         etmiştir: dışarıdan kurulumun düzelmesi, mağaza yüklemesi ve borç listesinin
         her kaleminin kararının yazılması; site sayfası ile eğitim bu çizginin hemen
-        arkasından, Ajans çalışma alanının kurulumu ise çizgi aşıldıktan sonra
+        arkasından, özel bir çalışma alanının kurulumu ise çizgi aşıldıktan sonra
         gelir. Açık iş listesindeki yirmi beş bayat etiket ile envanterin Founder'a
         sorduğu on üç ayrıntılı karar, ilgili Blokun sırası geldiğinde tek tek ele
         alınacaktır; envanter raporunun tam metni laboratuvarın nitelik rafında
@@ -2247,7 +2242,7 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         OTURUM 111 GECE DEVRİ · 2026-09-13: Founder'ın yokluğunda yapılabilecek
         işlerin bitirilmesi hedefiyle geliştirmede duran yedi yarım Adım ele
         alınmıştır. Kadro genişlemesi Adımı (OSS-A04), Founder'ın onayıyla site
-        uzmanı orkestrasyon kadrosuna devredilerek kapanmıştır. Gezinme reddi
+        uzmanı işi kapalı tarafa devredilerek kapanmıştır. Gezinme reddi
         (VIT-K78-A09), arayüz işaretleri (VIT-KIMLIK-A07) ve on dört ailenin
         anlatısı (KYN-OGR-A02) Adımlarında yapılabilir iş bitmiştir ve her birinde
         yalnız Founder'ın bakışı kalmıştır: gezinmede üç ret sebebinin canlı
@@ -2296,9 +2291,9 @@ DurumKaydı( kod: DRM-SARMAL, tarih: "2026-10-29", oturum: 116,
         Founder hükmüyle video yayınlarına bağlandığı için laboratuvarın yerel yayın
         dosyasına yazılmıştır; o dosyanın başlığı git dışında kaldığını söylemesine
         karşın dosyanın 2026-08-26 tarihinden beri özel laboratuvar deposunda izlendiği
-        ölçülmüş ve Founder'a bildirilmiştir. Ajans çalışma alanı için doğuş geçici bir
+        ölçülmüş ve Founder'a bildirilmiştir. Özel bir çalışma alanı için doğuş geçici bir
         klasörde sınanmış, doğan ağaç sıfır hata vermiş ve Sarmal'ın kodlarını
-        görmemiştir; Founder Ajans'ı ayrı bir oturumda kuracaktır. Sıradaki işler
+        görmemiştir; Founder o alanı ayrı bir oturumda kuracaktır. Sıradaki işler
         KYN-OGR-A02 kart okuması, Durumlar paneli, yayın öncesi bulgular, dışarıdan
         kurulum ve mağaza yüklemesidir.
 
