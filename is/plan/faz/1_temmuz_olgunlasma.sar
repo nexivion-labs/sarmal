@@ -23,8 +23,8 @@
 //   bakar — `çağır` hedeflerinin içine inmez (çağır-kenarı çevrimi RAY-3'ün işi;
 //   DIL-1.4 beyanıyla aynı sınır). Mevsim tarihi tek kaynaktan okunur.
 //
-//   DEVİR KAYDI (Founder 2026-07-21: "BLK-SOL-IDA-TEST hariç tüm blokları
-//   bitirelim; sonra orkestrasyon zekâsına geçelim"): Temmuz'un ağır mühendislik
+//   DEVİR KAYDI (Founder 2026-07-21: saha sınavı Bloku dışındaki bütün Blokların
+//   bitirilmesine, ardından kapalı ürünün işine geçilmesine hükmetti): Temmuz'un ağır mühendislik
 //   yükü kapandı (Gemini turu 8 Adım + RF-T3 plan zinciri kademe turu). Açık işi kalan 6 Blok
 //   Ağustos'a devrolur (Provider deseni — gövde sürer, biten Adımlar tarihsel
 //   kalır); done-blokların odunu Temmuz halkasında (büyüdükleri mevsim, MIM-1.2).

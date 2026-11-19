@@ -42,7 +42,7 @@ Faz( kod: FAZ-2026-EYLUL, ad: "Lansman Mevsimi", hedefTarih: "2026-11-30",
   // BLK-EKLENTI · 🛍️ EKL-F6 yayın Katmanı: mağaza yüklemesi ile GitHub dil kimliği başvurusu — v1'in kritik yolunda
   // BLK-SINAV3 · 🎓 SNV4-A01 tam steril sınav turu (ayrı pencere ister)
   // Performans mevsiminden devrolan panel kipi ile işçi gövdeleri 2026-09-12 Founder hükmüyle sonraya
-  // bırakıldı (@SONRA@_ mühürlü dosyalar); saha sınavı (BLK-SOL-IDA-TEST) aynı gün arşiv mührü aldı.
+  // bırakıldı (@SONRA@_ mühürlü dosyalar); saha sınavı Bloku aynı gün arşiv mührü aldı.
   // 2026-09-29 (KPS-SIR-A04): aşağıdaki altı gövde bu Faza o güne dek kendi `mevsim:`
   // alanlarıyla bağlıydı; panel kipi ile işçi gövdeleri ise @SONRA@_ mühürlü iki dosyada
   // hiçbir Faza bağlı olmadan duruyordu. MIM-1.2 Fazsız Blok bırakmadığı için ikisi bu

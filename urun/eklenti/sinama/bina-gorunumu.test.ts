@@ -171,7 +171,7 @@ Mekanizma( kod: MEK-IS, ad: "İş Mekanizması" )
   // Tek projeli paydaşın Profili kendi proje kökündedir; Batı'nın Profili kişi taşımaz (firma adı yazar).
   [`${BINA}/hizmet/paydaslar/kuzey/kuzey_anadizin.sar`]: `Proje( kod: PRJ-KUZEY, ad: "Kuzey", rejim: esnek ) {
   Profil( kod: PFL-KUZEY, ad: "Kuzey Fırını", ne: "Uydurma fırın.", sektör: "gıda", şehir: "Örnekköy",
-    kişiler: [ { hitap: "Deniz Bey", rol: "muhatap", sorumluluk: "onay" } ] )
+    kişiler: [ { hitap: "Örnek Bey", rol: "muhatap", sorumluluk: "onay" } ] )
 }
 `,
   [`${BINA}/hizmet/paydaslar/bati/bati_anadizin.sar`]: `Proje( kod: PRJ-BATI, ad: "Batı", rejim: esnek ) {
@@ -232,7 +232,7 @@ test("①' ⑤ bina ağacı onaylı şemayla aynı kademe ve sırada: Kök › K
     "    [briefcase] Hizmet — 5 proje",
     "      [rocket] Çekirdek — ray döşendi — vagon bekleniyor",
     "      [-] Paydaşlar — 4 proje",
-    "        [person] Deniz Bey — 1 proje",
+    "        [person] Örnek Bey — 1 proje",
     "          [rocket] Kuzey — ray döşendi — vagon bekleniyor",
     "        [person] Selin Hanım — 2 proje",
     "          [rocket] Bir — ray döşendi — vagon bekleniyor",
@@ -271,7 +271,7 @@ test("①' simge eşlemesi: kök organization ya da logo, yönetim law, ofis bri
   assert.equal(item("Atölye").iconPath?.id, "briefcase");
   assert.equal(item("Hizmet").iconPath?.id, "briefcase");
   assert.equal(item("Alfa").iconPath?.id, "rocket");
-  assert.equal(item("Deniz Bey").iconPath?.id, "person");
+  assert.equal(item("Örnek Bey").iconPath?.id, "person");
   assert.equal(item("Selin Hanım").iconPath?.id, "person");
   assert.equal(item("Kuzey").iconPath?.id, "rocket", "tek projeli müşterinin projesi de projedir");
   assert.equal(item("Bir").iconPath?.id, "rocket", "müşterinin içindeki proje yine projedir");
