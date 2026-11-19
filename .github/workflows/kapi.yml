@@ -118,11 +118,9 @@ jobs:
       # kurmadan koşar. Şart sıfır hata VE sıfır uyarıdır (YAS-4.1): motor yalnız
       # uyarıda sıfır çıkış verdiği için özet satırı ayrıca ölçülür; temiz koşu
       # "drift yok" der, kirli koşu "── ÖZET: N hata · M uyarı ──" basar.
-      # Plan, gömülü kanon ikizini teslim olarak beyan eder; dosya üretilir ve
-      # izlenmez, dolayısıyla temiz klonda denetimden önce üretici koşar. Üretici
-      # bağımlılık kurmaz ve temiz klonda çalışma ağacına fark bırakmaz.
-      - name: gömülü kanon üretimi
-        run: node urun/eklenti/arac/renk-uret.mjs
+      # EKL-F6-A07 + docDriftTanilari ile adıyla yok sayılan derleme çıktıları
+      # (gomulu-kanon.ts) temiz klonda da uyarısız geçer; dolayısıyla denetim
+      # hiçbir üretici çalıştırmadan doğrudan temiz klon üstünde koşar.
       - name: sarmal denetle
         run: |
           node urun/cekirdek/src/sarmal.ts denetle . | tee denetim.log

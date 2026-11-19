@@ -488,6 +488,37 @@ test("doc-drift: tamamlandı Adım'ın dosyalı meyvesi diskte yoksa uyarı; var
   assert.ok(t[0].tani.mesaj.includes("ADM-YOK") && t[0].tani.mesaj.includes("src/hayalet.ts"));
 });
 
+test("doc-drift: adıyla yok sayılan üretilen meyve temiz klonda uyarı doğurmaz; mutasyonla hayalet hâlâ yakalanır", async () => {
+  const { docDriftTanilari, diskTara } = await import("../src/denetci.ts");
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const kok = mkdtempSync(join(tmpdir(), "sarmal-docdrift-yoksay-"));
+  try {
+    mkdirSync(join(kok, "src"), { recursive: true });
+    writeFileSync(join(kok, ".gitignore"), "src/uretilen.ts\n", "utf8");
+    const plan = prog(`Blok( kod: BLK-U, ne: "x" ) { Katman( kod: FZ-U, ad: "f" ) { AltKatman( kod: KT-U, ad: "k" ) {
+        Adım( kod: ADM-URET, durum: tamamlandı, üretir: KOD-URET, kabul: "k", ne: "derlemede üretilen dosya" )
+      } } }
+      Kod( kod: KOD-URET, dosya: "src/uretilen.ts", ne: "üretilen meyve" )`);
+    const temizKlon = docDriftTanilari(new Map([["plan.sar", plan]]), diskTara(kok), kok);
+    assert.equal(temizKlon.length, 0, "temiz klonda adıyla yok sayılan üretilen dosya doc-drift doğurmamalı");
+
+    writeFileSync(join(kok, "src", "uretilen.ts"), "export const x = 1;\n", "utf8");
+    const uretilmis = docDriftTanilari(new Map([["plan.sar", plan]]), diskTara(kok), kok);
+    assert.equal(uretilmis.length, 0, "dosya üretildikten sonra da sonuç temiz kalmalı");
+
+    // Mutasyon: yok sayma satırı kaldırıldığında temiz klon doc-drift verir.
+    writeFileSync(join(kok, ".gitignore"), "", "utf8");
+    rmSync(join(kok, "src", "uretilen.ts"));
+    const mutasyon = docDriftTanilari(new Map([["plan.sar", plan]]), diskTara(kok), kok);
+    assert.equal(mutasyon.length, 1, "yok sayma satırı kaldırılınca eksik dosya doc-drift olarak yakalanmalı");
+    assert.equal(mutasyon[0].tani.kod, "doc-drift");
+  } finally {
+    rmSync(kok, { recursive: true, force: true });
+  }
+});
+
 // ── BKM-KAPI-A02: MIM-1.4 teknolojisiz-yüzey (proje-düzeyi v1) ───────────────────
 import { teknolojisizYuzeyTanilari } from "../src/denetci.ts";
 const progYap = (kaynak: string): Map<string, Program> =>
