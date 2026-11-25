@@ -7,6 +7,16 @@
 
 Sarmal, bir yazılım projesinin planını, kurallarını ve kararlarını `.sar` dosyalarında tutan açık kaynak bir dildir. Bu dosyalar insan için okunur, makine için denetlenebilir: motor her kaydetmede planı diskle karşılaştırır, VS Code eklentisi sonucu panellerde gösterir, MCP sunucusu aynı bilgiyi yapay zekâ ajanlarına verir. Sarmal kod üretmez; kodun neden ve hangi sırayla yazıldığını kaybolmaz hâle getirir.
 
+## Neden Sarmal
+
+Her programlama dili, bir avuç karardan ve kuraldan, yani bir spesifikasyondan doğar. Flutter bunun en çarpıcı örneğidir: Google'ın mühendisleri aynı işi aynı anda birçok platform için yapmak zorundaydı; platformlar arasındaki bağımlılıkları kurallara bağladılar, kuralları otomatikleştirdiler ve tek koddan birçok platforma yazan bir spesifikasyon doğdu. Sarmal aynı yoldan geldi, ama tek bir insan için: bir kurumun yüzlerce mühendisinin değil, tek bir geliştiricinin kendi kararlarını ve kurallarını kendi dilinde düzenleyebilmesi için.
+
+Her işin planında bir ağaç vardır. Tohum niyettir; kök salar, gövde büyür, dallar açılır, yapraklar çıkar ve iş meyve verir. Sarmal'da Bloklar gövde, Katmanlar dal, AltKatmanlar ince dal, Adımlar yaprak, Meyveler ise işin sonunda ortaya çıkan ürünlerdir. Flutter Widget ağacıyla arayüzü nasıl düzene koyduysa, Sarmal da işin ağacını öyle düzene koyar: Flutter'ın arayüze yaptığını Sarmal projenin kendisine yapıyor.
+
+Kuralları uzun süre basit Markdown dosyalarında yazdık ve yapay zekâ ajanlarının onlara uymadığını gördük, çünkü kuralları denetleyen kimse yoktu. Bu denetimi en iyi yapacak olan makinedir: deterministiktir, aynı soruya her seferinde aynı cevabı verir, yorulmaz, unutmaz, göz yummaz.
+
+Sarmal'ı en iyi anlatan cümle şudur: yapay zekâ hızlı tren, insan makinist, Sarmal ray. Tren ne kadar hızlı giderse gitsin raydan çıkmamalıdır; makinist yönü belirler, ray treni ve içindeki insanları güvende tutar. Ray Git ile birleştiğinde her karar ve her adım iz bırakır.
+
 ## Hangi derdi çözüyor
 
 Yapay zekâ ajanlarıyla çalışan bir projede plan sohbette kalır, karar bir önceki oturumun bağlamında kalır, kod plandan önde koşar ve üç hafta sonra kimse hangi işin neden yapıldığını söyleyemez. Ajan her oturuma sıfırdan başlar, insan bağlamı yeniden anlatır ve anlatılan şey her seferinde biraz değişir. Sorun ajanın zekâsı değil, projenin hafızasının makinenin okuyamadığı yerlerde durmasıdır.
